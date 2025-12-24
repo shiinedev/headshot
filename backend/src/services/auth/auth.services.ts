@@ -3,6 +3,8 @@ import type { RegisterInput } from "@/validators"
 import { passwordService } from "./password.service";
 import { ConflictError } from "@/utils/errors";
 import { verificationService } from "./verification.service";
+import { emailService } from "../notifications/email.service";
+import { logger } from "@/utils/logger";
 
 
 
@@ -37,6 +39,12 @@ export class AuthService {
             verificationTokenExpiry,
             isEmailVerified:false
         })
+
+        try {
+            await emailService.sendVerificationEmail(name, normalizedEmail, verificationToken);
+        } catch (error) {
+            logger.error("Failed to send verification email", { error, userId: user._id });
+        }
 
         return {
           user
