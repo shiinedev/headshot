@@ -1,7 +1,7 @@
 import { User, type IUser} from "@/models"
-import type { RegisterInput } from "@/validators"
+import type { LoginInput, RegisterInput } from "@/validators"
 import { passwordService } from "./password.service";
-import { ConflictError } from "@/utils/errors";
+import { ConflictError, NotFoundError } from "@/utils/errors";
 import { verificationService } from "./verification.service";
 import { emailService } from "../notifications/email.service";
 import { logger } from "@/utils/logger";
@@ -61,6 +61,38 @@ export class AuthService {
          if(existingUser){
             throw new ConflictError(`User with this email already exists : ${email}`);
          }
+    }
+
+    async loginUser(input:LoginInput):Promise<{user:IUser}>{
+
+        const {email,password} = input;
+
+        const normalizedEmail = this.normalizeEmail(email);
+
+        const user = await User.findOne({email:normalizedEmail});
+
+        //CHECK IF USER EXISTS
+        if(!user){
+            logger.warn("Login attempt with non-existing email", { email: normalizedEmail });
+            throw new NotFoundError(`User with this email ${normalizedEmail} does not exist`);
+        }
+
+        //check if password matches
+       const isPasswordMatch = await passwordService.comparePassword(password,user.password);
+         if(!isPasswordMatch){
+            logger.warn("Login attempt with incorrect password", { email: normalizedEmail });
+            throw new ConflictError("Incorrect password");
+         }
+
+        //check if email is verified
+        if(!user.isEmailVerified){
+            logger.warn("Login attempt with unverified email", { email: normalizedEmail });
+            throw new ConflictError("Email is not verified. Please verify your email to login.");
+        }
+
+        // ALL GOOD, RETURN USER
+
+        return {user};
     }
 }
 

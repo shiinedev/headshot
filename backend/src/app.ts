@@ -4,8 +4,6 @@ import helmet from "helmet";
 import cookieParser from "cookie-parser";
 import { config } from "@/config";
 import v1Routes from "@/router/v1";
-import { connectDB } from "@/db/connection";
-import { logger } from "@/utils/logger";
 import { errorMiddleware } from "@/middlewares";
 import { errorResponse } from "@/utils/response";
 
@@ -36,7 +34,7 @@ app.use(cookieParser());
 
 app.get("/health", (req, res) => {
   res.status(200).json({
-    status: "ok",
+    status: "OK",
     message: "server is running",
     timeStamp: new Date().toISOString(),
     uptime: process.uptime(),
@@ -59,30 +57,5 @@ app.use((req, res, next) => {
 
 app.use(errorMiddleware);
 
-const serverConnect = async () => {
-  try {
-    //database connection error handling
-    await connectDB();
 
-    //start server
-    const server = app.listen(config.port, async () => {
-      logger.info(`Server is running on port localhost:${config.port}`);
-    });
-
-    // Handle server errors
-    server.on("error", async (error: NodeJS.ErrnoException) => {
-      if (error.code === "EADDRINUSE") {
-        logger.error(`Port ${config.port} is already in use.`);
-        process.exit(1);
-      } else {
-        logger.error(`Server error: ${error.message}`);
-        process.exit(1);
-      }
-    });
-  } catch (error) {
-    logger.error(`Unexpected server error: ${error}`);
-    process.exit(1);
-  }
-};
-
-serverConnect();
+export default app;

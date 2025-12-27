@@ -28,3 +28,16 @@ export const registrationSchema = z
 
 
   export type RegisterInput = z.infer<typeof registrationSchema>;
+
+// pick method to create login schema
+  // export const loginSchema = registrationSchema.pick({
+  //   email: true,
+  //   password: true,
+  // });
+
+  export const loginSchema = z.object({
+    email: z.string().email({ error: "Invalid email address" }).trim(),
+    password: z.string().trim().min(1, { message: "Password is required" }),
+  });
+
+  export type LoginInput = z.infer<typeof loginSchema>;
