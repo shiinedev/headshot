@@ -1,2 +1,2 @@
 
-export  * from "./auth.controller"
+export  * as authController from "./auth.controller"

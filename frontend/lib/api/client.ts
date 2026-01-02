@@ -9,10 +9,10 @@ import axios from "axios";
 const BASE_API_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000/api/v1";
 
-export interface ApiResponse<T> {
+export interface ApiResponse<T=unknown> {
   success: boolean;
   message: string;
-  data: T;
+  data?: T;
   error?: any;
 }
 

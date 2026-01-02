@@ -17,6 +17,7 @@ import Link from "next/link";
 import {Loader2} from "lucide-react"
 import { useRegister } from "@/lib/hooks/useAuth";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 const registrationSchema = z
   .object({
@@ -49,6 +50,8 @@ const registrationSchema = z
 type RegisterValues = z.infer<typeof registrationSchema>;
 
 const RegisterPage = () => {
+
+  const router = useRouter();
   const form = useForm<RegisterValues>({
     resolver: zodResolver(registrationSchema),
     defaultValues: {
@@ -70,13 +73,14 @@ const RegisterPage = () => {
         toast.success("You have been registered successfully.",{
           description:"please check your email to verify your account."
         });
-        console.log("User registered successfully");
+
+        router.push("/login")
+        
       },
       onError:(error) =>{
         toast.error("Registration failed. Please try again.",{
           description: error.message || "An unexpected error occurred. please try again."
         });
-        console.error("Registration error:", error);
       }
     })
   

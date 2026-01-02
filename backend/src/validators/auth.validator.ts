@@ -29,11 +29,12 @@ export const registrationSchema = z
 
   export type RegisterInput = z.infer<typeof registrationSchema>;
 
-// pick method to create login schema
-  // export const loginSchema = registrationSchema.pick({
-  //   email: true,
-  //   password: true,
-  // });
+  export const verificationSchema = z.object({
+    token: z.string().trim().min(1, { message: "Verification token is required" }),
+  });
+
+  
+
 
   export const loginSchema = z.object({
     email: z.string().email({ error: "Invalid email address" }).trim(),

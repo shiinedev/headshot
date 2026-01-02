@@ -11,10 +11,16 @@ export interface RegisterResponse{
   user:User
 }
 
+export interface VerifyEmailResponse{
+  success: boolean;
+  message: string;
+}
 export interface LoginInput{
     email: string;
     password: string;
 }
+
+
 export interface LoginResponse{
   user:User,
   token:string

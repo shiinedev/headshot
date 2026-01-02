@@ -22,7 +22,7 @@ export class AppError extends Error {
 export class ValidationErrors extends AppError {
   public readonly errors: Record<string, string>[];
 
-  constructor(message: "Validation Error", errors: Record<string, string>[]) {
+  constructor(message: string ="Validation Error", errors: Record<string, string>[]) {
     super(message, 400, "ERR_VALIDATION", true);
     this.errors = errors;
     Error.captureStackTrace(this, this.constructor);

@@ -1,7 +1,7 @@
 import { User, type IUser} from "@/models"
 import type { LoginInput, RegisterInput } from "@/validators"
 import { passwordService } from "./password.service";
-import { ConflictError, NotFoundError } from "@/utils/errors";
+import { ConflictError, NotFoundError, ValidationErrors } from "@/utils/errors";
 import { verificationService } from "./verification.service";
 import { emailService } from "../notifications/email.service";
 import { logger } from "@/utils/logger";
@@ -61,6 +61,37 @@ export class AuthService {
          if(existingUser){
             throw new ConflictError(`User with this email already exists : ${email}`);
          }
+    }
+
+    //verify user email
+    async verifyUserEmail(token:string):Promise<void>{
+        const user = await User.findOne({verificationToken:token});
+
+        if(!user){
+            throw new ValidationErrors("Validation Error",[{
+                path: "token",
+                message: "Invalid verification token",  
+            }]);
+        }
+
+
+        //check if token is expired
+        if(user.isEmailVerified){
+            throw new ConflictError("Email is already verified")
+        }
+
+        if(user.verificationTokenExpiry && verificationService.isTokenExpired(user.verificationTokenExpiry)){
+            throw new ValidationErrors("Validation Error",[{
+                path: "token",
+                message: "Verification token has expired",  
+            }]);
+        }
+        
+        user.isEmailVerified = true;
+        user.verificationToken = undefined;
+        user.verificationTokenExpiry = undefined;
+
+        await user.save();
     }
 
     async loginUser(input:LoginInput):Promise<{user:IUser}>{

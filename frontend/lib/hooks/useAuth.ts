@@ -14,3 +14,13 @@ export const useRegister = () => {
     })
   
 }
+
+
+export const useVerifyEmail = () => {
+
+    return useMutation({
+        mutationFn:(token:string) => authService.verifyEmail(token),
+        mutationKey:authKeys.all
+    })
+  
+}
