@@ -74,7 +74,7 @@ export class EmailService {
     logger.info(`Sending email to ${to}`, { to, subject, html, text });
 
     const mailOptions = {
-      from:`"headshot" <${config.email.from}>`,
+      from:`"booking system" <${config.email.from}>`,
       to,
       subject,
       html,

@@ -2,6 +2,7 @@ import fs from "fs/promises";
 import path from "path";
 import { logger } from "./logger";
 
+
 const templateDir = path.join(process.cwd(), "src/templates/emails");
 
 const interpreter = (template: string, data: Record<string, any>): string => {
@@ -15,9 +16,9 @@ export const renderTemplate = async (templateName:string,data:Record<string,any>
 
     const templatePath = path.join(templateDir, `${templateName}${fileType}`);
     const template = await fs.readFile(templatePath,"utf-8");
+    console.log("template", template);
     
     const content = interpreter(template,data);
     logger.info(`Rendered template ${templateName} with data`, { templateName, data });
     return content;
 }
-
