@@ -74,7 +74,7 @@ export class EmailService {
     logger.info(`Sending email to ${to}`, { to, subject, html, text });
 
     const mailOptions = {
-      from:`"booking system" <${config.email.from}>`,
+      from:`"headShot pro" <${config.email.from}>`,
       to,
       subject,
       html,
@@ -112,7 +112,7 @@ export class EmailService {
 
   async sendVerificationEmail(name:string,email:string,verificationTokenUrl:string):Promise<void>{
     
-    const verificationUrl = `${config.frontend}?token=${verificationTokenUrl}`;
+    const verificationUrl = `${config.frontend}/verify-email?token=${verificationTokenUrl}`;
 
     await this.sendTemplateEmail(
         email,
