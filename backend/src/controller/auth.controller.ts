@@ -105,3 +105,31 @@ export const login = async (req: Request, res: Response) => {
     },
   });
 };
+
+
+export const getCurrentUser = async (req: Request, res: Response) => {
+    const userId = req.user?.userId;
+
+    if (!userId) {
+        throw new ValidationErrors("User ID is required");
+    }
+
+    const user = await authService.getCurrentUser(userId);
+
+    return successResponse(res, "Current user fetched successfully", {
+        user:{
+            id: user._id,
+            name: user.name,
+            email: user.email,
+            credits: user.credits,
+            image: user.image,
+            role: user.role,
+            isActive: user.isActive,
+            isEmailVerified: user.isEmailVerified,
+            createdAt: user.createdAt,
+            updatedAt: user.updatedAt,
+
+        }
+    });
+
+}

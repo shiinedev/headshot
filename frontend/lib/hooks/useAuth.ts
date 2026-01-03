@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query"
+import { useMutation, useQuery } from "@tanstack/react-query"
 import { LoginInput, RegisterInput } from "../types"
 import { authService } from "../services/auth"
 
@@ -10,7 +10,6 @@ export const useRegister = () => {
 
     return useMutation({
         mutationFn:(data:RegisterInput) => authService.register(data),
-        mutationKey:authKeys.all
     })
   
 }
@@ -20,7 +19,6 @@ export const useVerifyEmail = () => {
 
     return useMutation({
         mutationFn:(token:string) => authService.verifyEmail(token),
-        mutationKey:authKeys.all
     })
   
 }
@@ -40,7 +38,19 @@ export const useLogin = () => {
 
     return useMutation({
         mutationFn:(data:LoginInput) => authService.login(data),
-        mutationKey:authKeys.all
     })
   
 }
+
+
+export const useGetCurrentUser = () => {
+
+    return useQuery({
+        queryKey:authKeys.all,
+        queryFn:() => authService.getCurrentUser()
+    })
+  
+}
+
+
+

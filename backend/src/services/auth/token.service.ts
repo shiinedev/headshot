@@ -1,8 +1,8 @@
 import { config } from "@/config";
 import type { UserRole } from "@/models";
+import { UnauthorizedError } from "@/utils/errors";
 import jwt, { type SignOptions } from "jsonwebtoken";
 import type { StringValue } from "ms";
-
 
 export interface TokenPayload {
   userId: string;
@@ -11,7 +11,7 @@ export interface TokenPayload {
 }
 
 export class TokenService {
-    //method to  generate JWT token
+  //method to  generate JWT token
   generateSecretToken(payload: TokenPayload, secretType: "access" | "refresh") {
     const secret = this.getSecret(secretType);
     const expiresIn = this.getExpiresIn(secretType);
@@ -23,16 +23,28 @@ export class TokenService {
     return jwt.sign(payload, secret, options);
   }
 
-// generate token pairs
+  // generate token pairs
 
-    generateTokenPair(payload: TokenPayload) {
-        return{
-            accessToken: this.generateSecretToken(payload, "access"),
-            refreshToken: this.generateSecretToken(payload, "refresh"),
-        }
+  generateTokenPair(payload: TokenPayload) {
+    return {
+      accessToken: this.generateSecretToken(payload, "access"),
+      refreshToken: this.generateSecretToken(payload, "refresh"),
+    };
+  }
+
+  //method to verify JWT token
+  verifyAccessToken(
+    token: string,
+    secretType: "access" | "refresh" = "access"
+  ): TokenPayload {
+    const secret = this.getSecret(secretType);
+
+    try {
+      return jwt.verify(token, secret) as TokenPayload;
+    } catch (error) {
+      throw new UnauthorizedError("Invalid or expired token");
     }
-
-
+  }
 
   //helper methods
   getSecret(secretType: "access" | "refresh") {

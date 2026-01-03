@@ -4,8 +4,10 @@ import {
   LoginResponse,
   RegisterInput,
   RegisterResponse,
+  User,
   VerifyEmailResponse,
 } from "@/lib/types";
+import { get } from "http";
 
 export const authService = {
   register: async (data: RegisterInput): Promise<RegisterResponse> => {
@@ -20,5 +22,9 @@ export const authService = {
   login: async (data: LoginInput): Promise<LoginResponse> => {
     return api.post<LoginResponse>("/auth/login", data);
   },
-};
+  getCurrentUser: async (): Promise<User> => {
+    return api.get<User>("/auth/me");
 
+  }
+};
+  

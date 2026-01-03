@@ -1,7 +1,7 @@
 import { User, type IUser} from "@/models"
 import type { LoginInput, RegisterInput } from "@/validators"
 import { passwordService } from "./password.service";
-import { ConflictError, NotFoundError, ValidationErrors,AnAuthorizedError } from "@/utils/errors";
+import { ConflictError, NotFoundError, ValidationErrors,UnauthorizedError } from "@/utils/errors";
 import { verificationService } from "./verification.service";
 import { emailService } from "../notifications/email.service";
 import { logger } from "@/utils/logger";
@@ -136,14 +136,14 @@ export class AuthService {
         //CHECK IF USER EXISTS
         if(!user){
             logger.warn("Login attempt with non-existing email", { email: normalizedEmail });
-            throw new AnAuthorizedError("invalid email or password");
+            throw new UnauthorizedError("invalid email or password");
         }
 
         //check if password matches
        const isPasswordMatch = await passwordService.comparePassword(password,user.password);
          if(!isPasswordMatch){
             logger.warn("Login attempt with incorrect password", { email: normalizedEmail });
-            throw new AnAuthorizedError("invalid email or password");
+            throw new UnauthorizedError("invalid email or password");
          }
 
         //check if email is verified
@@ -155,7 +155,7 @@ export class AuthService {
         //check if user is active
         if(!user.isActive){
             logger.warn("Login attempt for inactive user", { email: normalizedEmail });
-            throw new AnAuthorizedError("User account is inactive. Please contact support.");
+            throw new UnauthorizedError("User account is inactive. Please contact support.");
         }
 
         // generate  token pair 
@@ -174,7 +174,19 @@ export class AuthService {
             refreshToken
         };
     }
+
+    async getCurrentUser(userId:string):Promise<IUser>{
+        const user = await User.findById(userId);
+
+        if(!user){
+            throw new NotFoundError("User not found");
+        }
+
+        return user;
+    }
 }
+
+
 
 
 export const authService  = new AuthService()

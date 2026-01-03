@@ -10,6 +10,7 @@ export interface IUser extends Document {
   password: string;
   credits: number;
   role:UserRole;
+  image?: string;
   isActive: boolean;
   isEmailVerified?: boolean;
   verificationToken?: string;
@@ -44,6 +45,9 @@ const userModel = new Schema<IUser>({
     type: String,
     enum: UserRole,
     default: UserRole.USER,
+  },
+  image: {
+    type: String,
   },
   isActive: {
     type: Boolean,

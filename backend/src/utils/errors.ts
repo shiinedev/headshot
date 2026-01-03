@@ -22,7 +22,7 @@ export class AppError extends Error {
 export class ValidationErrors extends AppError {
   public readonly errors: Record<string, string>[];
 
-  constructor(message: string ="Validation Error", errors: Record<string, string>[]) {
+  constructor(message: string ="Validation Error", errors: Record<string, string>[] = []) {
     super(message, 400, "ERR_VALIDATION", true);
     this.errors = errors;
     Error.captureStackTrace(this, this.constructor);
@@ -30,11 +30,11 @@ export class ValidationErrors extends AppError {
   }
 }
 
-export class AnAuthorizedError extends AppError {
+export class UnauthorizedError extends AppError {
   constructor(message: string = "Unauthorized access") {
     super(message, 401, "ERR_UNAUTHORIZED", true);
     Error.captureStackTrace(this, this.constructor);
-    Object.setPrototypeOf(this, AnAuthorizedError.prototype);
+    Object.setPrototypeOf(this, UnauthorizedError.prototype);
   }
 }
 
