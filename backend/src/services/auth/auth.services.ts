@@ -163,6 +163,7 @@ export class AuthService {
         const {accessToken,refreshToken} = tokenService.generateTokenPair({
             userId: user._id.toString(),
             email: user.email,
+            role: user.role
         });
 
         // ALL GOOD, RETURN USER

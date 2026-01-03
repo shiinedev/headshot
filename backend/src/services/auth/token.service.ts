@@ -1,4 +1,5 @@
 import { config } from "@/config";
+import type { UserRole } from "@/models";
 import jwt, { type SignOptions } from "jsonwebtoken";
 import type { StringValue } from "ms";
 
@@ -6,6 +7,7 @@ import type { StringValue } from "ms";
 export interface TokenPayload {
   userId: string;
   email: string;
+  role: UserRole;
 }
 
 export class TokenService {

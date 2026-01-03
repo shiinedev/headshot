@@ -1,10 +1,15 @@
 import mongoose, { Document, Schema } from "mongoose";
 
+export enum UserRole {
+  ADMIN="ADMIN",
+  USER="USER"
+}
 export interface IUser extends Document {
   name: string;
   email: string;
   password: string;
   credits: number;
+  role:UserRole;
   isActive: boolean;
   isEmailVerified?: boolean;
   verificationToken?: string;
@@ -34,6 +39,11 @@ const userModel = new Schema<IUser>({
   credits: {
     type: Number,
     default: 5,
+  },
+  role: {
+    type: String,
+    enum: UserRole,
+    default: UserRole.USER,
   },
   isActive: {
     type: Boolean,
