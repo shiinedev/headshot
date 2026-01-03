@@ -30,11 +30,11 @@ export class ValidationErrors extends AppError {
   }
 }
 
-export class AuthorizationError extends AppError {
+export class AnAuthorizedError extends AppError {
   constructor(message: string = "Unauthorized access") {
     super(message, 401, "ERR_UNAUTHORIZED", true);
     Error.captureStackTrace(this, this.constructor);
-    Object.setPrototypeOf(this, AuthorizationError.prototype);
+    Object.setPrototypeOf(this, AnAuthorizedError.prototype);
   }
 }
 

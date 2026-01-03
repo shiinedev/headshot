@@ -1,5 +1,7 @@
 import { api } from "@/lib/api";
 import {
+  LoginInput,
+  LoginResponse,
   RegisterInput,
   RegisterResponse,
   VerifyEmailResponse,
@@ -14,6 +16,9 @@ export const authService = {
   },
   resendVerificationEmail: async (email: string): Promise<VerifyEmailResponse> => {
     return api.post<VerifyEmailResponse>("/auth/resend-verification", { email });
-  }
+  },
+  login: async (data: LoginInput): Promise<LoginResponse> => {
+    return api.post<LoginResponse>("/auth/login", data);
+  },
 };
 

@@ -1,10 +1,11 @@
 import { User, type IUser} from "@/models"
 import type { LoginInput, RegisterInput } from "@/validators"
 import { passwordService } from "./password.service";
-import { ConflictError, NotFoundError, ValidationErrors } from "@/utils/errors";
+import { ConflictError, NotFoundError, ValidationErrors,AnAuthorizedError } from "@/utils/errors";
 import { verificationService } from "./verification.service";
 import { emailService } from "../notifications/email.service";
 import { logger } from "@/utils/logger";
+import { tokenService } from "./token.service";
 
 
 
@@ -124,7 +125,7 @@ export class AuthService {
     //login user
 
 
-    async loginUser(input:LoginInput):Promise<{user:IUser}>{
+    async loginUser(input:LoginInput):Promise<{user:IUser,accessToken:string,refreshToken:string}>{
 
         const {email,password} = input;
 
@@ -135,14 +136,14 @@ export class AuthService {
         //CHECK IF USER EXISTS
         if(!user){
             logger.warn("Login attempt with non-existing email", { email: normalizedEmail });
-            throw new NotFoundError(`User with this email ${normalizedEmail} does not exist`);
+            throw new AnAuthorizedError("invalid email or password");
         }
 
         //check if password matches
        const isPasswordMatch = await passwordService.comparePassword(password,user.password);
          if(!isPasswordMatch){
             logger.warn("Login attempt with incorrect password", { email: normalizedEmail });
-            throw new ConflictError("Incorrect password");
+            throw new AnAuthorizedError("invalid email or password");
          }
 
         //check if email is verified
@@ -151,9 +152,26 @@ export class AuthService {
             throw new ConflictError("Email is not verified. Please verify your email to login.");
         }
 
+        //check if user is active
+        if(!user.isActive){
+            logger.warn("Login attempt for inactive user", { email: normalizedEmail });
+            throw new AnAuthorizedError("User account is inactive. Please contact support.");
+        }
+
+        // generate  token pair 
+
+        const {accessToken,refreshToken} = tokenService.generateTokenPair({
+            userId: user._id.toString(),
+            email: user.email,
+        });
+
         // ALL GOOD, RETURN USER
 
-        return {user};
+        return {
+            user,
+            accessToken,
+            refreshToken
+        };
     }
 }
 

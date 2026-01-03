@@ -1,74 +1,107 @@
+import { config } from "@/config";
 import { authService } from "@/services";
 import { ValidationErrors } from "@/utils/errors";
-import { createdResponse,successResponse } from "@/utils/response";
+import { createdResponse, successResponse } from "@/utils/response";
 import type { Request, Response } from "express";
 
+const cookieOptions = {
+  httpOnly: true,
+  secure: config.env === "production",
+  sameSite: config.env === "production" ? ("none" as const) : ("lax" as const),
+  path: "/",
+};
 
-export const register = async (req:Request,res:Response) =>{
+export const register = async (req: Request, res: Response) => {
+  // service logic will be here
 
-    // service logic will be here
+  const result = await authService.registerUser(req.body);
 
-    const result = await authService.registerUser(req.body);
+  return createdResponse(res, "User registered successfully", {
+    user: {
+      id: result.user._id,
+      name: result.user.name,
+      email: result.user.email,
+      isEmailVerified: result.user.isEmailVerified,
+      credits: result.user.credits,
+      createdAt: result.user.createdAt,
+    },
+  });
+};
 
-   return createdResponse(res,"User registered successfully",{
-    user:{
-        id: result.user._id,
-        name: result.user.name,
-        email: result.user.email,
-        isEmailVerified: result.user.isEmailVerified,
-        credits: result.user.credits,
-        createdAt: result.user.createdAt,
-    }
-   });
+export const verifyEmail = async (req: Request, res: Response) => {
+  const { token } = req.query;
 
-}
+  if (!token || typeof token !== "string") {
+    throw new ValidationErrors("Validation Error", [
+      {
+        path: "token",
+        message: "Verification token is required",
+      },
+    ]);
+  }
 
-export const verifyEmail = async(req:Request,res:Response) => {
+  await authService.verifyUserEmail(token);
+  return successResponse(res, "Email verified successfully");
+};
 
-    const {token} = req.query;
+export const resendVerification = async (req: Request, res: Response) => {
+  const { email } = req.body;
 
-    if(!token || typeof token !== "string"){
-        throw new ValidationErrors("Validation Error",[{
-            path: "token",
-            message: "Verification token is required",
-        }]);
-    }
+  if (!email || typeof email !== "string") {
+    throw new ValidationErrors("Validation Error", [
+      {
+        path: "email",
+        message: "Email is required",
+      },
+    ]);
+  }
 
-    await authService.verifyUserEmail(token);
-    return successResponse(res,"Email verified successfully");
+  // service logic will be here
+  await authService.resendVerificationEmail(email);
+  return successResponse(res, "Verification email resent successfully");
+};
 
-}
+export const login = async (req: Request, res: Response) => {
+  const { email, password } = req.body;
 
-export const resendVerification = async(req:Request,res:Response) => {
+  if (
+    !email ||
+    typeof email !== "string" ||
+    !password ||
+    typeof password !== "string"
+  ) {
+    throw new ValidationErrors("Validation Error", [
+      {
+        path: "email",
+        message: "Email and password are required",
+      },
+    ]);
+  }
 
-    const {email} = req.body;
+  const { user, accessToken, refreshToken } = await authService.loginUser({
+    email,
+    password,
+  });
 
-    if(!email || typeof email !== "string"){
-        throw new ValidationErrors("Validation Error",[{
-            path: "email",
-            message: "Email is required",
-        }]);
-    }
+  console.log("tokens", { accessToken, refreshToken });
 
+  // save cookies or tokens if needed
 
-    // service logic will be here
-    await authService.resendVerificationEmail(email);
-    return successResponse(res,"Verification email resent successfully");
+  res.cookie("accessToken", accessToken, {
+    ...cookieOptions,
+    maxAge: 15 * 60 * 1000, // 15 minutes
+  });
 
-}
+  res.cookie("refreshToken", refreshToken, {
+    ...cookieOptions,
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  });
 
-
-export const login = async(req:Request,res:Response) => {
-
-    const result = await authService.loginUser(req.body);
-    return successResponse(res,"User logged in successfully",{
-        user:{
-            id: result.user._id,
-            name: result.user.name,
-            email: result.user.email,
-            isEmailVerified: result.user.isEmailVerified,
-            credits: result.user.credits,
-            createdAt: result.user.createdAt,
-        }
-    });
-}
+  return successResponse(res, "User logged in successfully", {
+    user: {
+      id: user._id,
+      name: user.name,
+      email: user.email,
+    },
+  });
+};

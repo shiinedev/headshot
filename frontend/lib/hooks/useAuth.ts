@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query"
-import { RegisterInput } from "../types"
+import { LoginInput, RegisterInput } from "../types"
 import { authService } from "../services/auth"
 
 const authKeys = {
@@ -34,3 +34,13 @@ export const useResendVerificationEmail = () => {
     })
   
 }   
+
+
+export const useLogin = () => {
+
+    return useMutation({
+        mutationFn:(data:LoginInput) => authService.login(data),
+        mutationKey:authKeys.all
+    })
+  
+}

@@ -5,6 +5,7 @@ export interface IUser extends Document {
   email: string;
   password: string;
   credits: number;
+  isActive: boolean;
   isEmailVerified?: boolean;
   verificationToken?: string;
   verificationTokenExpiry?: Date;
@@ -33,6 +34,10 @@ const userModel = new Schema<IUser>({
   credits: {
     type: Number,
     default: 5,
+  },
+  isActive: {
+    type: Boolean,
+    default: true,
   },
   isEmailVerified: {
     type: Boolean,

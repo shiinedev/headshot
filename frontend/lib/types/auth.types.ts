@@ -23,5 +23,4 @@ export interface LoginInput{
 
 export interface LoginResponse{
   user:User,
-  token:string
 }
