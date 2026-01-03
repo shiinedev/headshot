@@ -94,6 +94,36 @@ export class AuthService {
         await user.save();
     }
 
+    //resend verification email
+    async resendVerificationEmail(email:string):Promise<void>{
+
+        const normalizedEmail = this.normalizeEmail(email);
+
+        const user = await User.findOne({email:normalizedEmail});       
+        if(!user){
+            throw new NotFoundError(`User with this email ${normalizedEmail} does not exist`);
+        }
+        if(user.isEmailVerified){
+            throw new ConflictError("Email is already verified");
+        }
+
+        const verificationToken =  verificationService.generateVerificationToken();
+        const verificationTokenExpiry = verificationService.getTokenExpiryDate();
+
+        user.verificationToken = verificationToken;
+        user.verificationTokenExpiry = verificationTokenExpiry;
+
+        await user.save();  
+        try {
+            await emailService.sendVerificationEmail(user.name, normalizedEmail, verificationToken);
+        } catch (error) {
+            logger.error("Failed to send verification email", { error, userId: user._id });
+        }
+    }
+
+    //login user
+
+
     async loginUser(input:LoginInput):Promise<{user:IUser}>{
 
         const {email,password} = input;

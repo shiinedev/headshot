@@ -33,7 +33,7 @@ function VerifyEmailContent () {
                 description : "Your email has been successfully verfied . Redirecting to login..."
             });
 
-            setTimeout(()=>  router.push('/auth/login'), 2000)
+            setTimeout(()=>  router.push('/login'), 2000)
         },
         onError: (error) => {
             toast.error("Verification failed", {
@@ -104,7 +104,7 @@ function VerifyEmailContent () {
               Your email has been verified successfully. Redirecting to login...
             </p>
             <div className="mt-6">
-              <Link href="/auth/login">
+              <Link href="/login">
                 <Button className="w-full">Continue to Login</Button>
               </Link>
             </div>

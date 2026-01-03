@@ -39,6 +39,24 @@ export const verifyEmail = async(req:Request,res:Response) => {
 
 }
 
+export const resendVerification = async(req:Request,res:Response) => {
+
+    const {email} = req.body;
+
+    if(!email || typeof email !== "string"){
+        throw new ValidationErrors("Validation Error",[{
+            path: "email",
+            message: "Email is required",
+        }]);
+    }
+
+
+    // service logic will be here
+    await authService.resendVerificationEmail(email);
+    return successResponse(res,"Verification email resent successfully");
+
+}
+
 
 export const login = async(req:Request,res:Response) => {
 

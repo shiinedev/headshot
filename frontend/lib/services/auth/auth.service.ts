@@ -12,4 +12,8 @@ export const authService = {
   verifyEmail: async (token: string): Promise<VerifyEmailResponse> => {
     return api.get<VerifyEmailResponse>(`/auth/verify-email?token=${token}`);
   },
+  resendVerificationEmail: async (email: string): Promise<VerifyEmailResponse> => {
+    return api.post<VerifyEmailResponse>("/auth/resend-verification", { email });
+  }
 };
+

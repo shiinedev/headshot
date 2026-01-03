@@ -24,3 +24,13 @@ export const useVerifyEmail = () => {
     })
   
 }
+
+
+export const useResendVerificationEmail = () => {
+
+    return useMutation({     
+        mutationFn:(email:string) => authService.resendVerificationEmail(email),
+        mutationKey:authKeys.all
+    })
+  
+}   
