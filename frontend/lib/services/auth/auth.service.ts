@@ -5,20 +5,20 @@ import {
   LoginResponse,
   RegisterInput,
   RegisterResponse,
-  User,
-  VerifyEmailResponse,
+  GeneralResponse,
 } from "@/lib/types";
-import { get } from "http";
+import { log } from "console";
+
 
 export const authService = {
   register: async (data: RegisterInput): Promise<RegisterResponse> => {
     return api.post<RegisterResponse>("/auth/register", data);
   },
-  verifyEmail: async (token: string): Promise<VerifyEmailResponse> => {
-    return api.get<VerifyEmailResponse>(`/auth/verify-email?token=${token}`);
+  verifyEmail: async (token: string): Promise<GeneralResponse> => {
+    return api.get<GeneralResponse>(`/auth/verify-email?token=${token}`);
   },
-  resendVerificationEmail: async (email: string): Promise<VerifyEmailResponse> => {
-    return api.post<VerifyEmailResponse>("/auth/resend-verification", { email });
+  resendVerificationEmail: async (email: string): Promise<GeneralResponse> => {
+    return api.post<GeneralResponse>("/auth/resend-verification", { email });
   },
   login: async (data: LoginInput): Promise<LoginResponse> => {
     return api.post<LoginResponse>("/auth/login", data);
@@ -26,6 +26,9 @@ export const authService = {
   getCurrentUser: async (): Promise<CurrentUserResponse> => {
     return api.get<CurrentUserResponse>("/auth/me");
 
+  },
+  logout: async (): Promise<GeneralResponse> => {
+    return api.post<GeneralResponse>("/auth/logout");
   }
 };
   

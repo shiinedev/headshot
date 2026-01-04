@@ -11,7 +11,7 @@ export interface RegisterResponse{
   user:User
 }
 
-export interface VerifyEmailResponse{
+export interface GeneralResponse{
   success: boolean;
   message: string;
 }

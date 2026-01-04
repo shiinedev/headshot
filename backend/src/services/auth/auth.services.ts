@@ -216,6 +216,17 @@ export class AuthService {
             refreshToken
         }
     }
+
+
+    async logoutUser(userId:string):Promise<void>{
+        const user = await User.findById(userId).select("+refreshToken");   
+        if(!user){
+            throw new NotFoundError("User not found");
+        }
+
+        user.refreshToken = undefined;
+        await user.save();
+    }
 }
 
 

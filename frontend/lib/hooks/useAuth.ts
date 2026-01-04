@@ -46,3 +46,11 @@ export const useCurrentUser = (options?: { redirectOnError?: boolean }) => {
     },
   });
 };
+
+
+export const useLogout = () => {
+  return useMutation({
+    mutationFn: () => authService.logout(),
+    mutationKey: authKeys.all,
+  });
+}

@@ -159,3 +159,26 @@ export const refreshToken = async (req:Request, res:Response) => {
 
     return successResponse(res, "Token refreshed successfully");
 }
+
+
+export const logout = async (req:Request, res:Response) => {
+
+  // get tokens from cookies
+  
+    const token = req.cookies?.refreshToken || req.body?.refreshToken;
+
+    if(!token){
+        throw new UnauthorizedError("refresh token is required");
+    }
+
+
+    if(token){
+      await authService.logoutUser(req.user!.userId);
+    }
+
+
+    res.clearCookie("accessToken", cookieOptions);
+    res.clearCookie("refreshToken", cookieOptions);
+
+    return successResponse(res, "User logged out successfully");
+}
