@@ -1,7 +1,7 @@
 
 import  express  from "express";
-import authRoutes from "./auth.route";
-import paymentRoutes from "./payments.route";
+import authRoutes from "./auth.routes";
+import paymentRoutes from "./payments.routes";
 
 
 const app = express();
