@@ -1,15 +1,16 @@
 "use client";
 
-import { useGetCurrentUser } from "@/lib/hooks";
+import { useCurrentUser } from "@/lib/hooks";
 
 export default function Page() {
 
-    const {data:User} = useGetCurrentUser() 
+    const {data} = useCurrentUser() 
+    console.log(data?.user?.name)
 
 return (
-    <div>
-       <h1>First page</h1>
-         <pre>{JSON.stringify(User, null, 2)}</pre>
+    <div className="flex justify-between items-center p-6">
+       <h1>Logo</h1>
+         <span>welcome {data?.user?.name}</span>
     </div>
 )
 }

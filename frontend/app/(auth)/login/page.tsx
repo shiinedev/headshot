@@ -54,7 +54,7 @@ const LoginPage = () => {
           description:"Welcome back!"
         });
         form.reset();
-        router.push("/")
+        router.push("/dashboard/user");
         
       },
       onError:(error) =>{

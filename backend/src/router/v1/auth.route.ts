@@ -12,6 +12,7 @@ router.get("/verify-email",validateQuery(verificationSchema),authController.veri
 router.post("/resend-verification",validate(resendVerificationSchema),authController.resendVerification );
 router.post("/login",validate(loginSchema),authController.login);
 router.get("/me",authenticate,authController.getCurrentUser);
+router.post("/refresh-token",authController.refreshToken);
 
 
 export default router;

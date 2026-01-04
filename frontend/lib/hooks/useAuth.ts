@@ -1,56 +1,48 @@
-import { useMutation, useQuery } from "@tanstack/react-query"
-import { LoginInput, RegisterInput } from "../types"
-import { authService } from "../services/auth"
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { LoginInput, RegisterInput } from "@/lib/types";
+import { authService } from "@/lib/services/auth";
 
 const authKeys = {
-    all: ["auth"] as const,
-}
+  all: ["auth"] as const,
+  currentUser: () => [...authKeys.all, "currentUser"] as const
+};
 
 export const useRegister = () => {
-
-    return useMutation({
-        mutationFn:(data:RegisterInput) => authService.register(data),
-    })
-  
-}
-
+  return useMutation({
+    mutationFn: (data: RegisterInput) => authService.register(data),
+  });
+};
 
 export const useVerifyEmail = () => {
-
-    return useMutation({
-        mutationFn:(token:string) => authService.verifyEmail(token),
-    })
-  
-}
-
+  return useMutation({
+    mutationFn: (token: string) => authService.verifyEmail(token),
+  });
+};
 
 export const useResendVerificationEmail = () => {
-
-    return useMutation({     
-        mutationFn:(email:string) => authService.resendVerificationEmail(email),
-        mutationKey:authKeys.all
-    })
-  
-}   
-
+  return useMutation({
+    mutationFn: (email: string) => authService.resendVerificationEmail(email),
+    mutationKey: authKeys.all,
+  });
+};
 
 export const useLogin = () => {
+  return useMutation({
+    mutationFn: (data: LoginInput) => authService.login(data),
+  });
+};
 
-    return useMutation({
-        mutationFn:(data:LoginInput) => authService.login(data),
-    })
-  
-}
-
-
-export const useGetCurrentUser = () => {
-
-    return useQuery({
-        queryKey:authKeys.all,
-        queryFn:() => authService.getCurrentUser()
-    })
-  
-}
-
-
-
+export const useCurrentUser = (options?: { redirectOnError?: boolean }) => {
+  return useQuery({
+    queryKey: authKeys.currentUser(),
+    queryFn: () => authService.getCurrentUser(),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    retry: false,
+    throwOnError: (error: any) => {
+      if (options?.redirectOnError && typeof window !== "undefined" ) {
+        window.location.href = "/login";
+      }
+      return false;
+    },
+  });
+};

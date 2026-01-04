@@ -1,5 +1,6 @@
 import { api } from "@/lib/api";
 import {
+  CurrentUserResponse,
   LoginInput,
   LoginResponse,
   RegisterInput,
@@ -22,8 +23,8 @@ export const authService = {
   login: async (data: LoginInput): Promise<LoginResponse> => {
     return api.post<LoginResponse>("/auth/login", data);
   },
-  getCurrentUser: async (): Promise<User> => {
-    return api.get<User>("/auth/me");
+  getCurrentUser: async (): Promise<CurrentUserResponse> => {
+    return api.get<CurrentUserResponse>("/auth/me");
 
   }
 };

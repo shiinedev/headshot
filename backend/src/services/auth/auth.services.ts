@@ -166,6 +166,10 @@ export class AuthService {
             role: user.role
         });
 
+        //save refresh token to db
+        user.refreshToken = refreshToken;
+        await user.save();
+
         // ALL GOOD, RETURN USER
 
         return {
@@ -184,9 +188,35 @@ export class AuthService {
 
         return user;
     }
+
+    async refreshToken(token:string):Promise<{accessToken:string,refreshToken:string}>{
+
+        const payload = tokenService.verifyAccessToken(token,"refresh");
+
+        const user = await User.findById(payload.userId).select("+refreshToken");
+
+        if(!user || user.refreshToken !== token){
+            throw new UnauthorizedError("Invalid refresh token");
+        }
+        if(!user.isActive){
+            throw new UnauthorizedError("User account is inactive. Please contact support.");
+        }
+        const {accessToken,refreshToken} = tokenService.generateTokenPair({
+            userId: user._id.toString(),
+            email: user.email,
+            role: user.role
+        });
+
+        //update refresh token in db
+        user.refreshToken = refreshToken;
+        await user.save();
+
+        return {
+            accessToken,
+            refreshToken
+        }
+    }
 }
-
-
 
 
 export const authService  = new AuthService()
