@@ -15,9 +15,10 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import {Loader2} from "lucide-react"
-import { useLogin, useRegister } from "@/lib/hooks/useAuth";
+import { useLogin } from "@/lib/hooks/useAuth";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { useUser } from "@/lib/context/user-context";
 
 const loginSchema = z
   .object({
@@ -33,6 +34,8 @@ type LoginValues = z.infer<typeof loginSchema>;
 
 const LoginPage = () => {
 
+  const {user} = useUser();
+
   const router = useRouter();
   const form = useForm<LoginValues>({
     resolver: zodResolver(loginSchema),
@@ -42,7 +45,7 @@ const LoginPage = () => {
     },
   });
 
-  const {mutate: login, isPending,data:userData} = useLogin();
+  const {mutate: login, isPending} = useLogin();
 
   const onSubmit = (data: LoginValues) => {
     console.log("Registration Data:", data);
@@ -65,6 +68,12 @@ const LoginPage = () => {
     })
   
   };
+
+
+  if(user){
+    router.back();
+    return null;
+  }
 
   return (
      <div className="flex min-h-screen items-center justify-center bg-background px-4">

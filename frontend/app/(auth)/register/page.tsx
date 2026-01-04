@@ -18,6 +18,7 @@ import {Loader2} from "lucide-react"
 import { useRegister } from "@/lib/hooks/useAuth";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { useUser } from "@/lib/context/user-context";
 
 const registrationSchema = z
   .object({
@@ -50,6 +51,8 @@ const registrationSchema = z
 type RegisterValues = z.infer<typeof registrationSchema>;
 
 const RegisterPage = () => {
+
+    const {user} = useUser();
 
   const router = useRouter();
   const form = useForm<RegisterValues>({
@@ -85,6 +88,11 @@ const RegisterPage = () => {
     })
   
   };
+
+   if(user){
+    router.back();
+    return null;
+  }
 
   return (
      <div className="flex min-h-screen items-center justify-center bg-background px-4">

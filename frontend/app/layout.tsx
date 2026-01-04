@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
 import {QueryProvider} from "@/lib/query/";
 import { Toaster } from "sonner";
+import { ThemeProvider } from "@/components/theme-provider";
 
 const inter = Inter({subsets:['latin'],variable:'--font-sans'});
 
@@ -27,15 +28,23 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={inter.variable}>
+    <html lang="en" className={inter.variable} suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <ThemeProvider 
+        attribute="class"
+        defaultTheme="system"
+        enableSystem
+        storageKey="headShot-pro"
+        disableTransitionOnChange
+        >
+
         <QueryProvider>
             {children}
             <Toaster  position="top-right" richColors/>
         </QueryProvider>
-      
+      </ThemeProvider>
       </body>
     </html>
   );

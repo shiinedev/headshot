@@ -7,6 +7,7 @@ import { Button } from "../ui/button";
 import { LogOut } from "lucide-react";
 import { getDashboardPath } from "@/lib/utils/roles-util";
 import { getNavigationConfig } from "@/lib/config/dashboardNavigation";
+import { ThemeToggle } from "../theme-toggle";
 
 
 interface DashboardLayoutProps {
@@ -14,18 +15,23 @@ interface DashboardLayoutProps {
   onLogout?: () => void;
 }
 
-const DashboardLayoutComponent = ({ children, onLogout }: DashboardLayoutProps) => {
+const DashboardLayoutComponent = ({ children }: DashboardLayoutProps) => {
 
   const pathname = usePathname();
   const router = useRouter();
 
   const {user} = useUser();
 
-  const {mutate,isPending:isLoggingOut} = useLogout();
+  const {mutate:logout,isPending:isLoggingOut} = useLogout();
 
   const userRole = user?.role;
 
   const navigationItems = getNavigationConfig(userRole);
+
+  const handleLogout = () => {
+    logout();
+    router.push('/login')
+  }
 
 
   return (
@@ -46,14 +52,14 @@ const DashboardLayoutComponent = ({ children, onLogout }: DashboardLayoutProps) 
           {/* Todo:Theme Toggle */}
          <div className="flex items-center gap-3">
             {/*Theme toggle */}
-            {/* <ThemeToggle /> */}
+            <ThemeToggle   />
             <div className="text-right">
               <p className="text-sm font-medium text-foreground">
                 {user?.name || "User"}
               </p>
             </div> 
             <Button
-                // onClick={handleLogout}
+                onClick={handleLogout}
               disabled={isLoggingOut}
               variant="outline"
               size="sm"
