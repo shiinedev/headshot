@@ -29,10 +29,26 @@ export enum PaymentPlatform {
     platform: PaymentPlatform;
     phone?: string;
     description?: string;
-    returnUrl?: string;
+    successUrl?: string;
+    cancelUrl?: string;
     metadata?: PaymentMetadata;
+    customerEmail?: string;
   }
-  
+
+  export interface PaymentsRequestParams {
+     userId: string;
+    packageId: string;
+    amount: number;
+    credits: number;
+      platform: PaymentPlatform;
+    successUrl: string;
+    cancelUrl: string;
+    customerEmail?: string;
+    metadata?: Record<string, any>;
+  }
+
+   
+
   export interface PaymentResponse {
     success: boolean;
     message: string;
@@ -46,6 +62,7 @@ export enum PaymentPlatform {
     redirectUrl?: string;
     cancelUrl?: string;
     status?: PaymentStatus;
+  
   }
   
   export interface PaymentResult {

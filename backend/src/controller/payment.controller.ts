@@ -13,3 +13,13 @@ export const getCreditPackages= async(req:Request, res:Response) =>{
     return successResponse(res,"Credit packages retrieved successfully",packages);
 
 }
+
+
+export const processPayment= async(req:Request, res:Response) =>{
+
+    // call service
+
+    const {} = req.body;
+
+
+}
