@@ -32,7 +32,7 @@ export const authenticate = async (
       }
     }
 
-    console.log("Auth Middleware - Token:", token);
+
 
     if (!token) {
       logger.error("Authentication failed: No token provided");

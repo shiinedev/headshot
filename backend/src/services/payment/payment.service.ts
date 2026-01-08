@@ -17,37 +17,39 @@ import { stripeService } from "./stripe.service";
 export class PaymentService {
   //Todo: create stripe service
 
-  async getCreditPackages(): Promise<{ packages: ICreditPackage[] }> {
+  async getCreditPackages(): Promise<ICreditPackage[]> {
     const packages = await CreditPackage.find({ isActive: true })
       .sort({ price: 1 })
       .exec();
 
-    return { packages };
+    return packages 
   }
 
   async getCreditPackageById(
     packageId: string
-  ): Promise<{ package: ICreditPackage }> {
-    const creditPackage = await CreditPackage.findById(packageId, {
-      isActive: true,
-    }).exec();
+  ): Promise< ICreditPackage > {
+    const creditPackage = await CreditPackage.findById(packageId).exec();
 
     if (!creditPackage) {
       throw new NotFoundError("Credit package not found");
     }
 
-    return { package: creditPackage };
+    return creditPackage
   }
 
   // create Order
 
   async createOrder(input: {
-    amount: number;
+   userId: string;
     packageId: string;
+    amount: number;
+    credits: number;
     platform: PaymentPlatform;
-    userId: string;
+    phone?: string;
   }): Promise<IOrder> {
-    const { amount, packageId, platform, userId } = input;
+    const { amount, packageId, platform, userId ,credits,phone} = input;
+
+    console.log("credits",credits)
     // create order logic
     try {
       const order = await Order.create({
@@ -56,7 +58,10 @@ export class PaymentService {
         amount,
         platform,
         status: PaymentStatus.PENDING,
+        credits,
       });
+
+      logger.info("Order created successfully", { orderId: order._id });
 
       return order;
     } catch (error) {
@@ -99,6 +104,12 @@ export class PaymentService {
         },
       });
 
+      // update order with session id
+      order.stripeSessionId = session.sessionId;
+      order.stripePaymentIntentId = session.paymentIntentId;
+      order.status = PaymentStatus.PROCESSING;
+      await order.save();
+
       return {
         sessionId: session.sessionId,
         status: PaymentStatus.PROCESSING,
@@ -123,9 +134,11 @@ export class PaymentService {
 
     try {
       // get package details
-      const { package: creditPackage } = await this.getCreditPackageById(
+      const creditPackage = await this.getCreditPackageById(
         packageId
       );
+
+      console.log("creditPackage",creditPackage)
 
       const totalCredits = creditPackage.credits + (creditPackage.bonus || 0);
 
@@ -136,7 +149,7 @@ export class PaymentService {
       const userEmail = user?.email;
 
       // create order
-     const order = await this.createOrder({ amount: creditPackage.price, packageId, platform, userId });
+     const order = await this.createOrder({ amount: creditPackage.price, packageId, platform, userId,credits: totalCredits, phone });
 
       if (platform === PaymentPlatform.STRIPE) {
         // process Stripe payment
@@ -181,6 +194,27 @@ export class PaymentService {
       logger.error("Error processing payment", error);
       throw new AppError("Error processing payment");
     }
+  }
+
+
+  
+async handleSuccessfulPayment(orderId: string,source:"STRIPE" | "LOCAL" | "ADMIN" = "STRIPE"): Promise<void> {
+
+    const order = await Order.findById(orderId);
+
+    if (!order) {
+      logger.error("Order not found for successful payment", { orderId });
+      throw new NotFoundError("Order not found");
+    }
+
+    if(order.creditsAdded){
+      logger.info("Credits already added for this order", { orderId });
+      throw new AppError("Credits already added for this order",400);
+    }
+
+    //TODO:inngest queue to credit user account
+
+
   }
 }
 

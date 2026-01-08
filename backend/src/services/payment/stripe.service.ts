@@ -1,8 +1,14 @@
 import { config } from "@/config";
-import type { PaymentsRequestParams, StripePaymentResponse } from "@/types/payment-types";
+import { Order } from "@/models/Order.model";
+import {
+  PaymentStatus,
+  type PaymentsRequestParams,
+  type StripePaymentResponse,
+} from "@/types/payment-types";
 import { AppError, ValidationErrors } from "@/utils/errors";
 import { logger } from "@/utils/logger";
 import Stripe from "stripe";
+import { paymentService } from "./payment.service";
 
 export class StripeService {
   private stripe: Stripe;
@@ -21,7 +27,7 @@ export class StripeService {
   }
 
   async createCheckoutSession(params: {
-     userId: string;
+    userId: string;
     packageId: string;
     amount: number;
     credits: number;
@@ -84,14 +90,88 @@ export class StripeService {
         sessionId: session.id,
         paymentIntentId: session.payment_intent as string,
         clientSecret: session.client_secret as string,
-        redirectUrl: session.url as string || undefined,
+        redirectUrl: (session.url as string) || undefined,
       };
     } catch (error) {
-        logger.error("Error creating Stripe checkout session", error);
-        throw new AppError("Failed to create Stripe checkout session");
+      logger.error("Error creating Stripe checkout session", error);
+      throw new AppError("Failed to create Stripe checkout session");
+    }
+  }
+
+  async handleStripeWebhook(
+    body: string | Buffer,
+    signature: string
+  ): Promise<void> {
+    const webhookSecret = config.stripe.webhookSecret;
+    if (!webhookSecret) {
+      logger.error("Stripe webhook secret is not configured");
+      throw new ValidationErrors("Stripe webhook secret is is required");
+    }
+
+    const event = await this.stripe.webhooks.constructEventAsync(
+      body,
+      signature,
+      webhookSecret
+    );
+
+    switch (event.type) {
+      case "checkout.session.completed":
+        logger.info("Stripe checkout session completed", {
+          event: event.data.object,
+          created: event.created,
+        });
+        //TODO:update order status, credit user account
+        break;
+      case "payment_intent.payment_failed":
+        logger.warn("Stripe payment intent failed", {
+          eventDate: event.data.object,
+          created: event.created,
+        });
+
+        break;
+      default:
+        logger.info("Unhandled Stripe webhook event type", {
+          eventType: event.type,
+        });
+    }
+  }
+
+  async handleCheckoutSessionCompleted(
+    session: Stripe.Checkout.Session
+  ): Promise<void> {
+    try {
+      let order = await Order.findOne({ stripeSessionId: session.id });
+
+      if (!order && session.metadata?.orderId) {
+        order = await Order.findById(session.metadata.orderId);
+      }
+
+      if (!order) {
+        logger.error(
+          `Order not found for Stripe session ID: ${session.id}`
+        );
+        throw new AppError("Order not found for the completed session", 404);
+      }
+
+      if(!order.stripeSessionId){
+        order.stripeSessionId = session.id;
+      }
+
+      if(!order.stripePaymentIntentId && session.payment_intent){
+        order.stripePaymentIntentId = session.payment_intent as string;
+      }
+
+      order.save();
+
+      if(session.payment_status === "paid" && order.status !== PaymentStatus.COMPLETED){
+        await paymentService.handleSuccessfulPayment(order._id.toString());
+      }
+
+    } catch (error) {
+      logger.error("Error handling checkout session completed", error);
+      throw new AppError("Error handling checkout session completed");
     }
   }
 }
-
 
 export const stripeService = new StripeService();

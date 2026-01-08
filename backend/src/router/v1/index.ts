@@ -8,7 +8,7 @@ const app = express();
 
 
 app.use("/auth",authRoutes)
-app.use("/payments",paymentRoutes)
+app.use("/payment",paymentRoutes)
 
 
 export default app;

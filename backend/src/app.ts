@@ -6,6 +6,8 @@ import { config } from "@/config";
 import v1Routes from "@/router/v1";
 import { errorMiddleware } from "@/middlewares";
 import { errorResponse } from "@/utils/response";
+import { paymentController } from "./controller";
+
 
 const app = express();
 
@@ -23,6 +25,11 @@ app.use(
     ],
   })
 );
+
+// stripe middleware
+
+app.post("/payment/webhook/stripe", express.raw({ type: "application/json" }),
+ paymentController.handleStripeWebhook);
 
 // middlewares
 app.use(express.json());
