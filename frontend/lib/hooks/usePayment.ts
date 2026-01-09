@@ -27,7 +27,7 @@ export const useProcessPayment = () =>{
                 window.location.href = data.redirectUrl
             }else{
                 toast.success("Payment processed successfully!");
-                router.push("/user/credits")
+                router.push("dashboard/user/credits")
             }
         },
          onError: (error) => {

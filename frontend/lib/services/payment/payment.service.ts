@@ -1,5 +1,5 @@
 import { api } from "@/lib/api";
-import { GetCreditPackagesResponse, ProcessPaymentResponse,ProcessPaymentParams, CreditPackage } from "@/lib/types";
+import { ProcessPaymentResponse,ProcessPaymentParams, CreditPackage } from "@/lib/types";
 
 
 export const paymentService = {

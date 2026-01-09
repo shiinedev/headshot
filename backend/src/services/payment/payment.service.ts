@@ -7,12 +7,13 @@ import { Order, type IOrder } from "@/models/Order.model";
 import {
   PaymentPlatform,
   PaymentStatus,
-  type PaymentsRequestParams,
-  type StripePaymentResponse,
+  type PaymentResponse,
 } from "@/types/payment-types";
 import { AppError, NotFoundError } from "@/utils/errors";
 import { logger } from "@/utils/logger";
 import { stripeService } from "./stripe.service";
+import { triggerCreditAddition } from "../queue";
+import { config } from "@/config";
 
 export class PaymentService {
   //Todo: create stripe service
@@ -22,34 +23,32 @@ export class PaymentService {
       .sort({ price: 1 })
       .exec();
 
-    return packages 
+    return packages;
   }
 
-  async getCreditPackageById(
-    packageId: string
-  ): Promise< ICreditPackage > {
+  async getCreditPackageById(packageId: string): Promise<ICreditPackage> {
     const creditPackage = await CreditPackage.findById(packageId).exec();
 
     if (!creditPackage) {
       throw new NotFoundError("Credit package not found");
     }
 
-    return creditPackage
+    return creditPackage;
   }
 
   // create Order
 
   async createOrder(input: {
-   userId: string;
+    userId: string;
     packageId: string;
     amount: number;
     credits: number;
     platform: PaymentPlatform;
     phone?: string;
   }): Promise<IOrder> {
-    const { amount, packageId, platform, userId ,credits,phone} = input;
+    const { amount, packageId, platform, userId, credits, phone } = input;
 
-    console.log("credits",credits)
+    console.log("credits", credits);
     // create order logic
     try {
       const order = await Order.create({
@@ -79,7 +78,7 @@ export class PaymentService {
     successUrl: string;
     cancelUrl: string;
     userEmail?: string;
-  }): Promise<StripePaymentResponse> {
+  }): Promise<PaymentResponse> {
     const {
       order,
       creditPackage,
@@ -90,7 +89,7 @@ export class PaymentService {
     } = params;
 
     try {
-      const session = await stripeService.createCheckoutSession({
+      const stripeSession = await stripeService.createCheckoutSession({
         amount: order.amount,
         packageId: order.package.toString(),
         cancelUrl,
@@ -105,15 +104,22 @@ export class PaymentService {
       });
 
       // update order with session id
-      order.stripeSessionId = session.sessionId;
-      order.stripePaymentIntentId = session.paymentIntentId;
+      order.stripeSessionId = stripeSession.sessionId;
+      order.stripePaymentIntentId = stripeSession.paymentIntentId;
       order.status = PaymentStatus.PROCESSING;
       await order.save();
 
       return {
-        sessionId: session.sessionId,
+        success: true,
+        message: "Payment session created successfully",
+        orderId: order._id.toString(),
+        sessionId: stripeSession.sessionId,
+        redirectUrl: stripeSession.redirectUrl,
+        
+        cancelUrl: `${config.frontend}/dashboard/user/credits?status=cancel`,
+        amount: order.amount,
+        credits: totalCredits,
         status: PaymentStatus.PROCESSING,
-        redirectUrl: session.redirectUrl,
       };
     } catch (error) {
       logger.error("Error processing Stripe payment", error);
@@ -128,17 +134,15 @@ export class PaymentService {
     phone?: string;
     successUrl: string;
     cancelUrl: string;
-  }): Promise<StripePaymentResponse> {
-    const {packageId, platform, userId, successUrl, cancelUrl, phone } =
+  }): Promise<PaymentResponse> {
+    const { packageId, platform, userId, successUrl, cancelUrl, phone } =
       params;
 
     try {
       // get package details
-      const creditPackage = await this.getCreditPackageById(
-        packageId
-      );
+      const creditPackage = await this.getCreditPackageById(packageId);
 
-      console.log("creditPackage",creditPackage)
+      console.log("creditPackage", creditPackage);
 
       const totalCredits = creditPackage.credits + (creditPackage.bonus || 0);
 
@@ -149,17 +153,24 @@ export class PaymentService {
       const userEmail = user?.email;
 
       // create order
-     const order = await this.createOrder({ amount: creditPackage.price, packageId, platform, userId,credits: totalCredits, phone });
+      const order = await this.createOrder({
+        amount: creditPackage.price,
+        packageId,
+        platform,
+        userId,
+        credits: totalCredits,
+        phone,
+      });
 
       if (platform === PaymentPlatform.STRIPE) {
         // process Stripe payment
         const result = await this.processStripePayment({
-         order,
-         creditPackage,
-         totalCredits,
-         successUrl,
-         cancelUrl,
-         userEmail
+          order,
+          creditPackage,
+          totalCredits,
+          successUrl,
+          cancelUrl,
+          userEmail,
         });
 
         return result;
@@ -171,20 +182,20 @@ export class PaymentService {
         //Todo: process mobile money payments
 
         return {
-          status: "success",
+          status: PaymentStatus.PROCESSING,
           sessionId: "",
-          paymentIntentId: undefined,
-          clientSecret: undefined,
           redirectUrl: undefined,
+          message: "EBIR payment processing not implemented yet",
+          success: false,
         };
       } else if (platform === PaymentPlatform.EBIR) {
         //Todo: process ebir payments
         return {
-          status: "success",
+          status: PaymentStatus.PROCESSING,
           sessionId: "",
-          paymentIntentId: undefined,
-          clientSecret: undefined,
           redirectUrl: undefined,
+          message: "EBIR payment processing not implemented yet",
+          success: false,
         };
       } else {
         logger.error("Unsupported payment platform attempted", { platform });
@@ -196,10 +207,10 @@ export class PaymentService {
     }
   }
 
-
-  
-async handleSuccessfulPayment(orderId: string,source:"STRIPE" | "LOCAL" | "ADMIN" = "STRIPE"): Promise<void> {
-
+  async handleSuccessfulPayment(
+    orderId: string,
+    source: "STRIPE" | "LOCAL" | "ADMIN" = "STRIPE"
+  ): Promise<void> {
     const order = await Order.findById(orderId);
 
     if (!order) {
@@ -207,14 +218,19 @@ async handleSuccessfulPayment(orderId: string,source:"STRIPE" | "LOCAL" | "ADMIN
       throw new NotFoundError("Order not found");
     }
 
-    if(order.creditsAdded){
+    if (order.creditsAdded) {
       logger.info("Credits already added for this order", { orderId });
-      throw new AppError("Credits already added for this order",400);
+      throw new AppError("Credits already added for this order", 400);
     }
 
     //TODO:inngest queue to credit user account
 
-
+    await triggerCreditAddition({
+      userId: order.user.toString(),
+      orderId: order._id.toString(),
+      source,
+      credits: order.credits,
+    });
   }
 }
 

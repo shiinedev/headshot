@@ -125,6 +125,26 @@ export class EmailService {
     )
 
   }
+
+  async sendCreditAdditionEmail(name:string,email:string,creditsAdded:number,newBalance:number,amount:number, orderId:string):Promise<void>{
+
+    const dashboardUrl = `${config.frontend}/dashboard/credits`;
+    
+    await this.sendTemplateEmail(
+        email,
+        "Credits added to your account",
+        "payment-success",
+        {
+            name,
+            creditsAdded,
+            newBalance,
+            amount,
+            orderId,
+            dashboardUrl
+        }
+    )
+}
+
 }
 
 

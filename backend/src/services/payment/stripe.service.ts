@@ -2,7 +2,6 @@ import { config } from "@/config";
 import { Order } from "@/models/Order.model";
 import {
   PaymentStatus,
-  type PaymentsRequestParams,
   type StripePaymentResponse,
 } from "@/types/payment-types";
 import { AppError, ValidationErrors } from "@/utils/errors";
@@ -121,6 +120,9 @@ export class StripeService {
           created: event.created,
         });
         //TODO:update order status, credit user account
+        await this.handleCheckoutSessionCompleted(
+          event.data.object as Stripe.Checkout.Session
+        )
         break;
       case "payment_intent.payment_failed":
         logger.warn("Stripe payment intent failed", {

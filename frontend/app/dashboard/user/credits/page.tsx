@@ -83,6 +83,9 @@ const UserCredits = () => {
     (pkg:CreditPackage) => pkg._id === selectedPackageId
   );
 
+
+  console.log("user",user)
+
   
   return (
     <div className="space-y-8">

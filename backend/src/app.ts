@@ -7,6 +7,7 @@ import v1Routes from "@/router/v1";
 import { errorMiddleware } from "@/middlewares";
 import { errorResponse } from "@/utils/response";
 import { paymentController } from "./controller";
+import { inngestRoutes } from "@/router/innges.route";
 
 
 const app = express();
@@ -28,7 +29,7 @@ app.use(
 
 // stripe middleware
 
-app.post("/payment/webhook/stripe", express.raw({ type: "application/json" }),
+app.post("/api/v1/payment/webhook/stripe", express.raw({ type: "application/json" }),
  paymentController.handleStripeWebhook);
 
 // middlewares
@@ -49,6 +50,7 @@ app.get("/health", (req, res) => {
 });
 
 app.use("/api/v1", v1Routes);
+app.use("/api/inngest", inngestRoutes);
 
 // 404 not found handler
 app.use((req, res, next) => {

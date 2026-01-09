@@ -61,6 +61,7 @@ export enum PaymentPlatform {
     credits?: number;
     redirectUrl?: string;
     cancelUrl?: string;
+    successUrl?: string;
     status?: PaymentStatus;
   
   }
