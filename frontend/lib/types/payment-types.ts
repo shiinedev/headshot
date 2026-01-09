@@ -103,8 +103,6 @@ export interface GetPaymentHistoryParams {
 }
 
 export interface GetPaymentHistoryResponse {
-  success: boolean;
-  message: string;
   data: Order[];
 }
 

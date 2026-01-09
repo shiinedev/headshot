@@ -3,10 +3,12 @@
 import { CreditsHeader } from "@/components/payment/credit-header";
 import { CreditPackageCard } from "@/components/payment/credit-package-card";
 import { LocalPaymentForm } from "@/components/payment/local-payment-form";
+import { PaymentHistory } from "@/components/payment/payment-history";
 import { PaymentMethodSelector } from "@/components/payment/payment-method-selector";
 import { StripeCheckoutSection } from "@/components/payment/stripe-checkout-secsion";
 import { useUser } from "@/lib/context/user-context";
 import {
+  useGetPaymentHistory,
   useProcessPayment,
   userGetCreditPackages,
 } from "@/lib/hooks/usePayment";
@@ -25,13 +27,15 @@ const UserCredits = () => {
 
   const { user } = useUser();
 
-  const { data: creditPackages = [], isLoading: isLoadingCreditPackages } =
+  const { data: creditPackages, isLoading: isLoadingCreditPackages } =
     userGetCreditPackages();
 
     console.log("creditPackages",creditPackages);
 
   const { mutate: processPayment, isPending: isVerifying } =
     useProcessPayment();
+
+    const {data:paymentHistory,isLoading:isLoadingPaymentHistory } = useGetPaymentHistory(10)
 
      const handleSelectPackage = (packageId: string) => {
     setSelectedPackageId(packageId);
@@ -84,7 +88,11 @@ const UserCredits = () => {
   );
 
 
-  console.log("user",user)
+  console.log("paymentHistory",paymentHistory)
+
+  const orders = paymentHistory || [];
+  
+ 
 
   
   return (
@@ -101,13 +109,9 @@ const UserCredits = () => {
       {showHistory ? (
         //  Payment history component
         <div className="space-y-4">
-            <h2 className="text-xl font-semibold text-foreground">
-                Payment History
-            </h2>
-            <p>Your payment transactions will appear here.</p>
-            <span>Will implement soon.</span>
+            <PaymentHistory orders={orders} isLoading={isLoadingPaymentHistory} />
         </div>
-        // <PaymentHistory orders={paymentHistory || []} isLoading={isLoadingPaymentHistory} />
+        
       ) : (
         <>
           {/* Credit Packages */}

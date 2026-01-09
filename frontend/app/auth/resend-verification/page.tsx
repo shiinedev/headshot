@@ -108,7 +108,7 @@ const ResendVerificationPage = () => {
 
         <div className="text-center">
           <Link
-            href="/login"
+            href="/auth/login"
             className="text-sm text-muted-foreground hover:text-foreground"
           >
             Back to Login

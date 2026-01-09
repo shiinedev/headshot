@@ -13,5 +13,6 @@ router.get("/packages", paymentController.getCreditPackages);
 router.use(authenticate)
 
 router.post("/process-payment", paymentController.processPayment);
+router.get("/history", paymentController.getPaymentHistory);
 
 export default router;

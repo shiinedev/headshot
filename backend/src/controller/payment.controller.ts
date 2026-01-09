@@ -4,11 +4,7 @@ import { successResponse } from "@/utils/response";
 import type { Request,Response } from "express";
 
 export const getCreditPackages= async(req:Request, res:Response) =>{
-
-
-
     //service logic call
-
     const packages = await paymentService.getCreditPackages();
 
     return successResponse(res,"Credit packages retrieved successfully",packages);
@@ -53,4 +49,19 @@ export const handleStripeWebhook= async(req:Request, res:Response) =>{
 
     await stripeService.handleStripeWebhook(req.body, stripeSignature);
 
+}
+
+export const getPaymentHistory= async(req:Request, res:Response) =>{
+
+    const userId = req.user?.userId as string;
+    if(!userId){
+        throw new ValidationErrors("User not authenticated");
+    }
+
+    const limit = req.query.limit  as string || "10" as string;
+
+
+    const history = await paymentService.getPaymentHistory(userId,limit);
+
+    return successResponse(res,"Payment history retrieved successfully", history);
 }

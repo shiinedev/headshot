@@ -33,7 +33,7 @@ function VerifyEmailContent () {
                 description : "Your email has been successfully verfied . Redirecting to login..."
             });
 
-            setTimeout(()=>  router.push('/login'), 2000)
+            setTimeout(()=>  router.push('/auth/login'), 2000)
         },
         onError: (error) => {
             toast.error("Verification failed", {
@@ -63,7 +63,7 @@ function VerifyEmailContent () {
               Invalid verification link. No token provided.
             </p>
             <div className="mt-6">
-              <Link href="/resend-verification">
+              <Link href="/auth/resend-verification">
                 <Button className="w-full">Resend Verification Email</Button>
               </Link>
             </div>
@@ -104,7 +104,7 @@ function VerifyEmailContent () {
               Your email has been verified successfully. Redirecting to login...
             </p>
             <div className="mt-6">
-              <Link href="/login">
+              <Link href="/auth/login">
                 <Button className="w-full">Continue to Login</Button>
               </Link>
             </div>
@@ -125,10 +125,10 @@ function VerifyEmailContent () {
                 "Failed to verify email. The link may have expired."}
             </p>
             <div className="mt-6 flex flex-col gap-4">
-              <Link href="/resend-verification">
+              <Link href="/auth/resend-verification">
                 <Button className="w-full">Resend Verification Email</Button>
               </Link>
-              <Link href="/register">
+              <Link href="/auth/register">
                 <Button variant="outline" className="w-full">
                   Back to Register
                 </Button>

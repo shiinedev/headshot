@@ -35,3 +35,14 @@ export const useProcessPayment = () =>{
         }
     })
 }
+
+
+
+export const useGetPaymentHistory = (limit?: number) =>{
+    return useQuery({
+        queryKey: ['payment-history',limit],
+        queryFn: async () => paymentService.getPaymentHistory(limit),
+        staleTime: 5 * 60 * 1000, // 5 minutes
+        retry:2
+    })
+}

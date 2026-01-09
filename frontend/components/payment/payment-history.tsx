@@ -40,6 +40,8 @@ const statusConfig: Record<
 };
 
 export function PaymentHistory({ orders, isLoading }: PaymentHistoryProps) {
+
+  console.log("orders",orders);
   if (isLoading) {
     return (
       <div className="space-y-4">
@@ -50,7 +52,8 @@ export function PaymentHistory({ orders, isLoading }: PaymentHistoryProps) {
     );
   }
 
-  console.log(orders);
+  console.log("orders",orders);
+
   if (!orders || orders.length === 0) {
     return (
       <div className="rounded-lg border border-dashed border-border bg-muted/50 p-12 text-center">

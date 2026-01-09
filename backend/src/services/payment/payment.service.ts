@@ -223,7 +223,7 @@ export class PaymentService {
       throw new AppError("Credits already added for this order", 400);
     }
 
-    //TODO:inngest queue to credit user account
+    //inngest queue to credit user account
 
     await triggerCreditAddition({
       userId: order.user.toString(),
@@ -231,6 +231,18 @@ export class PaymentService {
       source,
       credits: order.credits,
     });
+  }
+
+  async getPaymentHistory(userId: string, limit: string): Promise<IOrder[]> {
+
+    const orders = await Order.find({ user: userId })
+    .populate("package")
+    .sort({ createdAt: -1 })
+    .limit(parseInt(limit))
+    .exec();
+
+    return orders;
+
   }
 }
 

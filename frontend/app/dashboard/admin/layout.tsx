@@ -8,7 +8,7 @@ const AdminLayout = async ({children}: {children: React.ReactNode}) => {
     const user = await getCurrentUser();
 
     if(!user ){
-        redirect("/login");
+        redirect("/auth/login");
     }
 
     if(user.role !== UserRole.ADMIN){
