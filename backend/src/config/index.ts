@@ -34,9 +34,15 @@ export const config = {
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || "",
     region: process.env.AWS_REGION || "us-east-1",
     bucketName: process.env.AWS_S3_BUCKET_NAME || "",
-    version: process.env.AWS_S3_API_VERSION || "2010-05-15",
+    version: process.env.AWS_S3_API_VERSION || "2010-10-01",
   },
   replicate:{
     apiKey: process.env.REPLICATE_API_KEY || "",
+  },
+  upload:{
+    maxFileSizeInBytes: 5 * 1024 * 1024, // 5 MB
+   allowedMimeTypes: ["image/jpeg", "image/png", "image/jpg", "image/webp"],
+   maxFilesCount: 5,
+
   }
 };
