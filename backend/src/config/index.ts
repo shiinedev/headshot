@@ -1,3 +1,5 @@
+import { version } from "os";
+
 export const config = {
   port: process.env.PORT || 8000,
   database:
@@ -26,5 +28,15 @@ export const config = {
   stripe:{
     secretKey: process.env.STRIPE_SECRET_KEY || "",
     webhookSecret: process.env.STRIPE_WEBHOOK_SECRET || "",
+  },
+  aws:{
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID || "",
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || "",
+    region: process.env.AWS_REGION || "us-east-1",
+    bucketName: process.env.AWS_S3_BUCKET_NAME || "",
+    version: process.env.AWS_S3_API_VERSION || "2010-05-15",
+  },
+  replicate:{
+    apiKey: process.env.REPLICATE_API_KEY || "",
   }
 };
