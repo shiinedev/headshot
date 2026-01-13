@@ -27,7 +27,7 @@ export const generateHeadshot = async (req:Request, res:Response) => {
         throw new ValidationErrors("No file uploaded");
     }
 
-    const result = await headshotService.generateHeadshot({
+    const result = await headshotService.saveOriginalPhoto({
         userId,
         file,
         styles,
