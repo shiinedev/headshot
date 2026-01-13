@@ -3,10 +3,6 @@ import { createdResponse, successResponse } from "@/utils/response";
 import type { Request, Response } from "express";
 import mongoose from "mongoose";
 import { ValidationErrors } from "@/utils/errors";
-import { custom } from "zod";
-import { User } from "@/models";
-import { logger } from "@/utils/logger";
-import { s3Service } from "@/services";
 
 
 

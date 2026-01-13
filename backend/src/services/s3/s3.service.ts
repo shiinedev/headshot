@@ -1,5 +1,5 @@
 import { config } from "@/config";
-import { ExternalServiceError } from "@/utils/errors";
+import { AppError, ExternalServiceError } from "@/utils/errors";
 import { logger } from "@/utils/logger";
 import {
   GetObjectCommand,
@@ -42,14 +42,16 @@ export class S3Service {
     return `${prefix}/${userId}/${timestamp}-${randombytes}.${extension}`;
   }
 
-  async uploadOriginalPhoto(
+  async uploadToS3(
     userId: string,
     fileBuffer: Buffer,
-    mimeType: string
+    mimeType: string,
+     type: "generated" | "originals",
+    style?: string,
   ): Promise<UploadResult> {
     try {
       const extension = mimeType.split("/")[1] || "jpg";
-      const key = this.generateKey(userId, "headshots", extension);
+      const key = this.generateKey(userId, `${type  === "originals" ? "originals" : `generated/${style}`}`, extension);
 
       // upload to s3 logic
       const putCommand = new PutObjectCommand({
@@ -88,6 +90,22 @@ export class S3Service {
     } catch (error) {
       logger.error("Error generating presigned URL:", error);
       throw new ExternalServiceError("s3", "Failed to generate presigned URL");
+    }
+  }
+
+  async downloadImageFromUrl(url: string): Promise<Buffer> {
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new AppError("Failed to download image", response.status);
+        }
+
+        const arrayBuffer = await response.arrayBuffer();
+        return Buffer.from(arrayBuffer);
+    } catch (error) {
+        logger.error("Error downloading image from URL:", error);
+        throw new AppError("Failed to download image from URL");
+        
     }
   }
 }
