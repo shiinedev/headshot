@@ -4,7 +4,7 @@ import { logger } from "@/utils/logger";
 import { User } from "@/models";
 import { PaymentStatus } from "@/types/payment-types";
 import { NonRetriableError } from "inngest";
-import { emailService } from "@/services/notifications"
+import { emailService } from "@/services/notifications";
 import { inngestClient } from "@/services/queue";
 
 export interface ICreditAdditionData {
@@ -26,7 +26,7 @@ export const getCreditAddFunction = () => {
 
       // step 1 validate the order
 
-      const order = await step.run("Validating-order", async () => {
+      await step.run("Validating-order", async () => {
         const order = await Order.findById(orderId);
 
         if (!order) {
@@ -105,7 +105,7 @@ export const getCreditAddFunction = () => {
           orderAmount: updateOrder.amount,
           userEmail: user.email,
           userName: user.name,
-            orderId: updateOrder._id.toString(),
+          orderId: updateOrder._id.toString(),
         };
       });
 
@@ -129,9 +129,8 @@ export const getCreditAddFunction = () => {
               result.userEmail || "",
               result.creditsAdded,
               result.newBalance,
-                result.orderAmount,
-                result.orderId
-
+              result.orderAmount,
+              result.orderId
             );
             logger.info("Credit addition email sent successfully", {
               userId,
@@ -155,12 +154,11 @@ export const getCreditAddFunction = () => {
         }
       });
 
-
       return {
         success: true,
         message: "Credits added successfully",
-        data:result
-      }
+        data: result,
+      };
     }
   );
 };

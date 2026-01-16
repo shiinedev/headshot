@@ -1,11 +1,14 @@
-import { Headshot, User } from "@/models";
-import { AppError, ExternalServiceError, ValidationErrors } from "@/utils/errors";
+import { Headshot, User, type IHeadshot } from "@/models";
+import { AppError, ExternalServiceError, NotFoundError, ValidationErrors } from "@/utils/errors";
 import { logger } from "@/utils/logger";
 import type mongoose from "mongoose";
 import { s3Service } from "@/services/s3";
 import { triggerGenerateHeadshot } from "../queue";
 import Replicate from "replicate";
 import { config } from "@/config";
+import type { HydratedDocument } from "mongoose";
+
+export type HeadshotType = HydratedDocument<IHeadshot>;
 
 export const STYLES = {
   professional: {
@@ -43,13 +46,13 @@ export const STYLES = {
     prompt:
       "A black and white headshot of a person with strong contrast and dramatic lighting.",
   },
-};
+} as const;
 
 export type HeadshotStyles = keyof typeof STYLES;
 
 export interface GenerateHeadshotParams {
   imageUrl: string;
-  style: HeadshotStyles;
+  style: keyof typeof STYLES;
   prompt?: string;
 }
 
@@ -127,7 +130,6 @@ export class HeadshotService {
         originalPhotoUrl: presignedUrl,
         originalPhotoKey: uploadResult.key,
         selectedStyles: styles,
-        processingStartedAt: new Date(),
       });
 
       // trigger headshot generation process
@@ -196,6 +198,132 @@ export class HeadshotService {
       imageUrl: generatedImageUrl,
       style,
     };
+
+  }
+
+  async getHeadshots(params: {
+    userId: string;
+    status?: string;
+    limit?: string | number;
+    offset?: string | number;
+  }):Promise<{
+    headshots: HeadshotType[],
+    pagination: {
+      total: number;
+      limit: number;
+      offset: number;
+      hasMore: boolean;
+    };
+  }> {
+    const { userId, status, limit = 10, offset = 0 } = params;
+    const query: any = { userId };
+
+    if (status) {
+      query.status = status;
+    }
+
+    try {
+
+      const headshotsData = await Headshot.find(query)
+      .sort({ createdAt: -1 })
+      .limit(Number(limit || 10))
+      .skip(Number(offset || 0));
+
+      const total = await Headshot.countDocuments(query);
+
+      // headshot urls
+
+      const headshotsWithUrls = await Promise.all(
+        headshotsData.map(async (headshot) => {
+
+          const headshotObj = headshot.toObject();
+
+          const presignedOriginalUrl = await s3Service.getPresignedUrl(
+            headshot.originalPhotoKey
+          );
+
+          const genenratedHeadshotsWithUrls = await Promise.all(
+           headshotObj.generatedHeadshots.map(async (generatedHeadshot) => {
+
+              //check if key is missing
+              if(!generatedHeadshot.key){
+                logger.warn(`Generated headshot key is missing for headshot ${headshot._id}`);
+                return { 
+                  ...generatedHeadshot,
+                  url: generatedHeadshot.url || "",
+                 }
+              }
+              const presignedUrl = await s3Service.getPresignedUrl(
+                generatedHeadshot.key
+              );
+              return {
+                ...generatedHeadshot,
+                url: presignedUrl,
+              };
+            })
+          )
+
+          return {
+            ...headshotObj,
+            originalPhotoUrl: presignedOriginalUrl,
+            generatedHeadshots: genenratedHeadshotsWithUrls,
+          }
+        })
+      )
+
+      return {
+        headshots: headshotsWithUrls as HeadshotType[],
+        pagination: {
+          total,
+          limit: Number(limit || 10),
+          offset: Number(offset || 0),
+          hasMore: Number(offset || 0) + headshotsData.length < total,
+        },
+      };
+      
+    } catch (error) {
+      logger.error("Error fetching headshots:", error);
+      throw new AppError(
+        "Failed to fetch headshots",
+        500,
+        "HEADSHOT_FETCH_FAILED"
+      );
+    }
+
+  }
+
+  async deleteHeadshot(params: {
+    userId: mongoose.Types.ObjectId;
+    headshotId: string;
+  }) {
+    const { userId, headshotId } = params;
+
+    try {
+
+    const headshot = await Headshot.findOne({ _id: headshotId ,userId});
+
+    if(!headshot){
+      logger.warn(`Headshot ${headshotId} not found for user ${userId}`);
+      throw new NotFoundError("Headshot not found");
+    }
+
+    // delete original photo from s3
+
+    const keysToDelete = [headshot.originalPhotoKey,
+      ...headshot.generatedHeadshots.map((gh) => gh.key)
+    ];
+    await s3Service.deleteFromS3(keysToDelete);
+
+    await Headshot.findByIdAndDelete({_id:headshotId});
+
+    logger.info(`Headshot ${headshotId} deleted successfully`);
+
+    return headshotId;
+    
+  } catch (error) {
+    logger.error("Error deleting headshot:", error);
+    throw new AppError("Failed to delete headshot", 500);
+  }
 
   }
 }

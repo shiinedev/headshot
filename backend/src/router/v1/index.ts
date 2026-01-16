@@ -10,7 +10,7 @@ const app = express();
 
 app.use("/auth",authRoutes)
 app.use("/payment",paymentRoutes)
-app.use("/headshot",headShotRoutes);
+app.use("/headshots",headShotRoutes);
 
 
 export default app;

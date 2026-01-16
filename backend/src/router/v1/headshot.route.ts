@@ -1,5 +1,6 @@
 import { headshotController } from "@/controller";
-import { authenticate, upload } from "@/middlewares";
+import { authenticate, upload, validate } from "@/middlewares";
+import { headshotPhotoSchema } from "@/validators/headshot.validator";
 import Express from "express"
 
 
@@ -10,6 +11,9 @@ headshotRoute.use(authenticate);
 
 
 headshotRoute.get("/styles",headshotController.getAvailableStyles);
-headshotRoute.post("/generate",upload.single("photo"),headshotController.generateHeadshot);
+headshotRoute.post("/generate",upload.single("photo"),validate(headshotPhotoSchema), headshotController.generateHeadshot);
+headshotRoute.get("/", headshotController.getHeadshots);
+headshotRoute.delete("/:id", headshotController.deleteHeadshot);
+
 
 export default headshotRoute;

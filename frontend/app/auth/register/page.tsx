@@ -52,7 +52,6 @@ type RegisterValues = z.infer<typeof registrationSchema>;
 
 const RegisterPage = () => {
 
-    const {user} = useUser();
 
   const router = useRouter();
   const form = useForm<RegisterValues>({
@@ -89,10 +88,7 @@ const RegisterPage = () => {
   
   };
 
-   if(user){
-    router.back();
-    return null;
-  }
+ 
 
   return (
      <div className="flex min-h-screen items-center justify-center bg-background px-4">

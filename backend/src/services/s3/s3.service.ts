@@ -2,6 +2,7 @@ import { config } from "@/config";
 import { AppError, ExternalServiceError } from "@/utils/errors";
 import { logger } from "@/utils/logger";
 import {
+  DeleteObjectCommand,
   GetObjectCommand,
   PutObjectCommand,
   S3Client,
@@ -53,12 +54,18 @@ export class S3Service {
       const extension = mimeType.split("/")[1] || "jpg";
       const key = this.generateKey(userId, `${type  === "originals" ? "originals" : `generated/${style}`}`, extension);
 
+      logger.info(`Uploading file to S3 with key: ${key} with type: ${type} and style: ${style} and mimeType: ${mimeType}`);
       // upload to s3 logic
       const putCommand = new PutObjectCommand({
         Bucket: this.bucketName,
         Key: key,
         Body: fileBuffer,
         ContentType: mimeType,
+        Metadata:{
+          userId,
+          updateAt:new Date().toISOString(),
+          type
+        }
       });
 
       const result = await s3Client.send(putCommand);
@@ -106,6 +113,42 @@ export class S3Service {
         logger.error("Error downloading image from URL:", error);
         throw new AppError("Failed to download image from URL");
         
+    }
+  }
+
+  async deletePhotoByKey(key: string): Promise<void> {
+    if(!key || key.trim() === ""){
+      logger.warn("Empty key provided for deletion");
+      throw new AppError("Invalid S3 key provided for deletion");
+    }
+
+    try {
+        const deleteCommand = new DeleteObjectCommand({
+      Bucket: this.bucketName,
+      Key: key,
+    });
+    await s3Client.send(deleteCommand);
+    logger.info(`File with key ${key} deleted from S3`);
+    } catch (error) {
+      logger.error("Error deleting file from S3:", error);
+      throw new ExternalServiceError("s3", "Failed to delete file from S3");
+    }
+
+
+  }
+
+  async deleteFromS3(keys: string[]): Promise<void> {
+    try {
+
+      const deletedPromise = keys.map((key) => this.deletePhotoByKey(key));
+
+      await Promise.all(deletedPromise);
+
+      logger.info(`Files with keys ${keys.join(", ")} deleted from S3`);
+      
+    } catch (error) {
+      logger.error("Error deleting files from S3:", error);
+      throw new ExternalServiceError("s3", "Failed to delete files from S3");
     }
   }
 }

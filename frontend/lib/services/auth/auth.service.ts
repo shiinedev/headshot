@@ -7,7 +7,7 @@ import {
   RegisterResponse,
   GeneralResponse,
 } from "@/lib/types";
-import { log } from "console";
+
 
 
 export const authService = {

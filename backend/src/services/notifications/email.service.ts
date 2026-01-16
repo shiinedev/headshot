@@ -112,7 +112,7 @@ export class EmailService {
 
   async sendVerificationEmail(name:string,email:string,verificationTokenUrl:string):Promise<void>{
     
-    const verificationUrl = `${config.frontend}/verify-email?token=${verificationTokenUrl}`;
+    const verificationUrl = `${config.frontend}/auth/verify-email?token=${verificationTokenUrl}`;
 
     await this.sendTemplateEmail(
         email,

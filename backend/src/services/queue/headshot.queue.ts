@@ -1,5 +1,5 @@
 import { Headshot } from "@/models";
-import { headshotService, type HeadshotStyles } from "../headshot";
+import { headshotService, STYLES, type HeadshotStyles } from "../headshot";
 import { inngestClient } from "./inngest-client";
 import { logger } from "@/utils/logger";
 import {
@@ -7,12 +7,8 @@ import {
   ExternalServiceError,
   ValidationErrors,
 } from "@/utils/errors";
-import { custom } from "zod";
-import he from "zod/v4/locales/he.js";
 import { s3Service } from "../s3";
-import { upload } from "@/middlewares";
-import { is } from "zod/v4/locales";
-import { generateHeadshot } from "@/controller/headshot.controller";
+
 
 export interface GenerateHeadshotEventData {
   headshotId: string;
@@ -22,11 +18,12 @@ export interface GenerateHeadshotEventData {
   prompt?: string;
 }
 
-export const getGenerateHeadshotFunction = async () => {
+export const getGenerateHeadshotFunction =  () => {
   return inngestClient.createFunction(
     {
       id: "generate-headshot",
       retries: 3,
+      
     },
     {
       event: "headshot/generate-headshot",
@@ -57,16 +54,18 @@ export const getGenerateHeadshotFunction = async () => {
               throw new ValidationErrors("Styles must be an array");
             }
 
-            if (styles.length === 0 || !prompt?.trim()) {
+            const stylesArray = styles as HeadshotStyles[];
+
+              if (stylesArray.length === 0 && !prompt?.trim()) {
               throw new ValidationErrors(
                 "At least one style or a custom prompt must be provided"
               );
             }
 
-            const stylesArray = styles as HeadshotStyles[];
+            const stylesToProcess = stylesArray.length > 0 ? stylesArray :[STYLES.professional.name as HeadshotStyles];
 
             const outputResults = await Promise.all(
-              stylesArray.map(async (style) => {
+              stylesToProcess.map(async (style) => {
                 // call service for generating headshot per style
                 try {
                   const imageResult = await headshotService.generateHeadshot({

@@ -9,7 +9,6 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-  FormDescription
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -18,23 +17,21 @@ import {Loader2} from "lucide-react"
 import { useLogin } from "@/lib/hooks/useAuth";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { useUser } from "@/lib/context/user-context";
+
 
 const loginSchema = z
   .object({
- 
     email: z.email({ message: "Invalid email address" }).trim(),
     password: z
       .string()
       .min(1, { message: "Password is required" })
-      
   });
 
 type LoginValues = z.infer<typeof loginSchema>;
 
 const LoginPage = () => {
 
-  const {user} = useUser();
+  
 
   const router = useRouter();
   const form = useForm<LoginValues>({
@@ -70,10 +67,7 @@ const LoginPage = () => {
   };
 
 
-  if(user){
-    router.back();
-    return null;
-  }
+  
 
   return (
      <div className="flex min-h-screen items-center justify-center bg-background px-4">
@@ -131,10 +125,6 @@ const LoginPage = () => {
                       {...field}
                     />
                   </FormControl>
-                  <FormDescription>
-                    Must be at least 8 characters with uppercase, lowercase,
-                    number and special character.
-                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
