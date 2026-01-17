@@ -1,1 +1,6 @@
 export * from "./useAuth"
+export * from "./useAdmin"
+export * from "./useHeadshots"
+export * from "./useHeadshots"
+export * from "./usePayment"
+export * from "./useUsersTable"

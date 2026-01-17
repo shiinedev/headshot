@@ -4,7 +4,7 @@ export enum UserRole {
 }
 
 export interface User {
-  id: string;
+  _id: string;
   name: string;
   email: string;
   credits: number;
@@ -12,8 +12,6 @@ export interface User {
   image?: string;
   isActive: boolean;
   isEmailVerified?: boolean;
-  verificationToken?: string;
-  verificationTokenExpiry?: Date;
   createdAt: Date;
   updatedAt: Date;
 }

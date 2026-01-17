@@ -139,6 +139,8 @@ export const refreshToken = async (req:Request, res:Response) => {
 
     const token = req.cookies?.refreshToken || req.body?.refreshToken;
 
+    console.log("refresh token:", token);
+
     if(!token){
         throw new UnauthorizedError("refresh token is required");
     }
