@@ -44,5 +44,9 @@ export const config = {
    allowedMimeTypes: ["image/jpeg", "image/png", "image/jpg", "image/webp"],
    maxFilesCount: 5,
 
+  },
+  redis:{
+    url:process.env.UPSTASH_REDIS_REST_URL || "",
+    token:process.env.UPSTASH_REDIS_REST_TOKEN || "",
   }
 };

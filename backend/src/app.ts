@@ -8,6 +8,7 @@ import { errorMiddleware } from "@/middlewares";
 import { errorResponse } from "@/utils/response";
 import { paymentController } from "./controller";
 import { inngestRoutes } from "@/router/innges.route";
+import { apiRateLimitConfig } from "./middlewares/rateLimit";
 
 
 const app = express();
@@ -40,7 +41,7 @@ app.use(cookieParser());
 
 //routes
 
-app.get("/health", (req, res) => {
+app.get("/health",apiRateLimitConfig.general, (req, res) => {
   res.status(200).json({
     status: "OK",
     message: "server is running",
