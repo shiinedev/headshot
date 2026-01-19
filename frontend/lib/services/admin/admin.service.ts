@@ -1,8 +1,10 @@
 import { api } from "@/lib/api"
-import { User, UserRole } from "@/lib/types"
+import { GetAllOrders, OrderPrams, PaymentPlatform, PaymentStatus, User, UserRole } from "@/lib/types"
 
 
 export const adminService = {
+
+    // users
 
     getAllUSers:async():Promise<{users:User[], total:number}> =>{
         return await api.get<{users:User[], total:number}>("/admin/users");
@@ -18,5 +20,39 @@ export const adminService = {
     },
     banUser:async(userId:string,isBanned:boolean):Promise<{user:User,isBanned:boolean}> =>{
         return await api.put<{user:User,isBanned:boolean}>(`/admin/ban-user/${userId}`,{isBanned});
+    },
+
+    // orders
+    getAllOrders:async(params?:OrderPrams):Promise<GetAllOrders> =>{
+        return await api.get<GetAllOrders>(`/admin/orders?page=${params?.page || 1}&limit=${params?.limit || 10}&status=${params?.status ||''}`);
     }
+}
+
+
+interface orderData {
+  _id: string;
+  amount: number;
+  credits: number;
+  creditsAdded: boolean;
+  platform: PaymentPlatform;
+  status: PaymentStatus;
+  package: {
+    credits: number;
+    name: string;
+    price: number;
+    _id: string;
+  };
+  user: {
+    _id: string;
+    name: string;
+    email: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+  pagination:{
+    page: number;
+    limit: number;
+    total:number
+    totalPages: number;
+  }
 }

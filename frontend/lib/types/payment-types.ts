@@ -41,8 +41,8 @@ export interface CreditPackage {
  */
 export interface Order {
   _id: string;
-  user: string;
-  package: CreditPackage;
+  user: OrderUser;
+  package: OrderPackage;
   amount: number;
   credits: number;
   platform: PaymentPlatform;
@@ -102,8 +102,58 @@ export interface GetPaymentHistoryParams {
   limit?: number;
 }
 
+export interface OrderPrams {
+  page?: number;
+  limit?: number;
+  status?: string;
+  platform?: string;
+}
+
 export interface GetPaymentHistoryResponse {
   data: Order[];
+}
+
+export interface GetAllOrders  {
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages(): number;
+  };
+  orders: Order[];
+}
+
+export interface OrderPackage {
+  credits: number
+  name: string
+  price: number
+  _id: string
+}
+
+export interface OrderUser {
+  _id: string
+  name: string
+  email: string
+}
+
+export interface OrderColumns {
+  _id: string
+  amount: number
+  credits: number
+  creditsAdded: boolean
+  platform: PaymentPlatform
+  status: PaymentStatus
+  package: OrderPackage
+  user: OrderUser
+  createdAt: string
+  updatedAt: string
+}
+
+export interface OrderPagination {
+  page: number
+  limit: number
+  total: number
+  totalPages: number
 }
 
 export interface GetCreditPackagesResponse {

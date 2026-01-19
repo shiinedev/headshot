@@ -58,3 +58,33 @@ export const authenticate = async (
     throw new UnauthorizedError("Unauthorized access");
   }
 };
+
+
+export const authorize = (...roles: UserRole[]) => {
+  return async(req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const userId = req.user?.userId; 
+      
+      if(!userId){
+        logger.error("Authorization failed: No user ID found in request");
+        throw new UnauthorizedError("You do not have permission to access this resource");
+      }
+
+      const user = await User.findById(userId);
+
+      if(!user){
+        logger.error("Authorization failed: User not found");
+        throw new UnauthorizedError("You do not have permission to access this resource");
+      }
+
+      if (!user.role || !roles.includes(user.role)) {
+        logger.error("Authorization failed: Insufficient permissions");
+        throw new UnauthorizedError("You do not have permission to access this resource");
+      }
+      next();
+    } catch (error) { 
+      logger.error("Authorization failed", { error });
+      throw new UnauthorizedError("You do not have permission to access this resource");
+    }
+  };
+};

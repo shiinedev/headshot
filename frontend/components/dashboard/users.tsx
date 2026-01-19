@@ -57,7 +57,7 @@ interface UsersTableProps {
   data: User[];
   totalUsers?: number;
   onDeleteUser: (userId: string) => void;
-  onBanUser: (userId: string) => void;
+  onBanUser: (userId: string, isBanned: boolean) => void;
   onUpdateRole: (userId: string, newRole: UserRole) => void;
   onAddCredits: (userId: string, creditsToAdd: number) => void;
   isUpdating: boolean;

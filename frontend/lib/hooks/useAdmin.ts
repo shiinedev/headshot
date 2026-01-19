@@ -1,8 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { adminService } from "../services/admin";
-import { UserRole } from "@/lib/types";
-
-
+import { OrderPrams, UserRole } from "@/lib/types";
 
 export const UseGetAllUsers = () => {
   return useQuery({
@@ -14,7 +12,7 @@ export const UseGetAllUsers = () => {
 };
 
 export const UseUpdateUserRole = () => {
-    const queryClient = useQueryClient();
+  const queryClient = useQueryClient();
   return useMutation({
     mutationKey: ["update-user-role"],
     mutationFn: async ({
@@ -31,7 +29,7 @@ export const UseUpdateUserRole = () => {
 };
 
 export const UseAddUserCredits = () => {
-    const queryClient = useQueryClient();
+  const queryClient = useQueryClient();
   return useMutation({
     mutationKey: ["add-user-credits"],
     mutationFn: async ({
@@ -48,7 +46,7 @@ export const UseAddUserCredits = () => {
 };
 
 export const UseDeleteUser = () => {
-    const queryClient = useQueryClient();
+  const queryClient = useQueryClient();
   return useMutation({
     mutationKey: ["delete-user"],
     mutationFn: async (userId: string) => adminService.deleteUser(userId),
@@ -59,12 +57,27 @@ export const UseDeleteUser = () => {
 };
 
 export const UseBanUser = () => {
-    const queryClient = useQueryClient();
+  const queryClient = useQueryClient();
   return useMutation({
     mutationKey: ["ban-user"],
-    mutationFn: async ({ userId, isBanned }: { userId: string; isBanned: boolean }) => adminService.banUser(userId, isBanned),
+    mutationFn: async ({
+      userId,
+      isBanned,
+    }: {
+      userId: string;
+      isBanned: boolean;
+    }) => adminService.banUser(userId, isBanned),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["all-users"] });
     },
+  });
+};
+
+export const UseGetAllOrders = (params?:OrderPrams) => {
+  return useQuery({
+    queryKey: ["all-orders"],
+    queryFn: async () => adminService.getAllOrders(params),
+    staleTime: 5 * 60 * 1000,
+    retry: 2,
   });
 };

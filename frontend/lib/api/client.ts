@@ -14,10 +14,20 @@ export interface ApiResponse<T = unknown> {
   message: string;
   data?: T;
   error?: any;
+  meta?: {
+    page: number;
+    limit: number;
+    totalPages: number;
+    total: number;
+  };
 }
 
 export class APiError extends Error {
-  constructor(message: string, public status: number, public error: any) {
+  constructor(
+    message: string,
+    public status: number,
+    public error: any,
+  ) {
     super(message);
     this.name = "APiError";
   }
@@ -69,7 +79,7 @@ axiosInstance.interceptors.response.use(
             error?.message ||
             "unknown error occurred",
           error.response.status,
-          error.response.data.error
+          error.response.data.error,
         );
       }
 
@@ -79,7 +89,7 @@ axiosInstance.interceptors.response.use(
 
     // handle 401 errors - unauthorized
     const isRefreshEndpoint = originalRequest?.url?.includes(
-      "/auth/refresh-token"
+      "/auth/refresh-token",
     );
 
     if (isRefreshEndpoint || originalRequest._retry || hasRefreshFailed()) {
@@ -97,7 +107,7 @@ axiosInstance.interceptors.response.use(
 
       Promise.reject(refreshError);
     }
-  }
+  },
 );
 
 export const api = {
@@ -108,7 +118,7 @@ export const api = {
   post: <T = unknown>(
     endPoint: string,
     body?: any,
-    config?: AxiosRequestConfig
+    config?: AxiosRequestConfig,
   ) =>
     axiosInstance
       .post<ApiResponse<T>>(endPoint, body, config)
@@ -116,7 +126,7 @@ export const api = {
   put: <T = unknown>(
     endPoint: string,
     body?: any,
-    config?: AxiosRequestConfig
+    config?: AxiosRequestConfig,
   ) =>
     axiosInstance
       .put<ApiResponse<T>>(endPoint, body, config)
