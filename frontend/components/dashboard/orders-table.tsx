@@ -3,7 +3,7 @@
 import {
   flexRender,
 } from "@tanstack/react-table"
-import type { Order, PaymentStatus, PaymentPlatform } from "@/lib/types"
+import { Order, PaymentStatus, PaymentPlatform } from "@/lib/types"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -18,6 +18,8 @@ import {
 } from "@/components/ui/pagination"
 import { Search, ShoppingCart } from "lucide-react"
 import { useOrderTable } from "@/lib/hooks/useOrderTable"
+import { useSearch } from "@/lib/hooks/useSearch"
+import { useEffect, useMemo } from "react"
 
 
 export interface OrdersTableProps {
@@ -37,6 +39,28 @@ export function OrdersTable({ data }: OrdersTableProps) {
     currentPage,
     getPageNumbers, 
  } = useOrderTable({ data });
+
+
+ const [{limit,page,platform,status},setSearch] = useSearch();
+
+ useEffect(() => {
+  setSearch({limit,page})
+ },[limit,page,setSearch]);
+
+
+ const handleSetStatus = (status:PaymentStatus | "all") =>{
+
+  setStatusFilter(status);
+  setSearch({status});
+
+ }
+
+ const handleChangePlatform = (platform:PaymentPlatform | "all") =>{
+  setPlatformFilter(platform);
+  setSearch({platform});
+ }
+
+
   return (
     <div className="space-y-4">
       {/* Search and Filter Bar */}
@@ -51,28 +75,30 @@ export function OrdersTable({ data }: OrdersTableProps) {
           />
         </div>
         <div className="flex flex-wrap items-center gap-3">
-          <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as PaymentStatus | "all")}>
+          <Select value={status} onValueChange={(value) => handleSetStatus(value as PaymentStatus | "all")}>
             <SelectTrigger className="w-[140px]">
               <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Status</SelectItem>
-              <SelectItem value="completed">Completed</SelectItem>
-              <SelectItem value="pending">Pending</SelectItem>
-              <SelectItem value="failed">Failed</SelectItem>
-              <SelectItem value="refunded">Refunded</SelectItem>
+              <SelectItem value={PaymentStatus.COMPLETED}>Completed</SelectItem>
+              <SelectItem value={PaymentStatus.PENDING}>Pending</SelectItem>
+              <SelectItem value={PaymentStatus.FAILED}>Failed</SelectItem>
+              <SelectItem value={PaymentStatus.REFUNDED}>Refunded</SelectItem>
+              <SelectItem value={PaymentStatus.PROCESSING}>Processing</SelectItem>
             </SelectContent>
           </Select>
-          <Select value={platformFilter} onValueChange={(value) => setPlatformFilter(value as PaymentPlatform | "all")}>
+          <Select value={platform} onValueChange={(value) => handleChangePlatform(value as PaymentPlatform | "all")}>
             <SelectTrigger className="w-[140px]">
               <SelectValue placeholder="Platform" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Platforms</SelectItem>
-              <SelectItem value="stripe">Stripe</SelectItem>
-              <SelectItem value="paypal">PayPal</SelectItem>
-              <SelectItem value="razorpay">Razorpay</SelectItem>
-              <SelectItem value="crypto">Crypto</SelectItem>
+              <SelectItem value="STRIPE">Stripe</SelectItem>
+              <SelectItem value="EVC">Evc</SelectItem>
+              <SelectItem value="ZAAS">Zaad</SelectItem>
+              <SelectItem value="ZAHAL">Zahal</SelectItem>
+              <SelectItem value="LOCAL">Local</SelectItem>
             </SelectContent>
           </Select>
           <div className="flex items-center gap-2 text-sm text-muted-foreground">

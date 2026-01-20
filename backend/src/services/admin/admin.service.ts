@@ -22,8 +22,9 @@ export interface OrderPrams {
 
 export class AdminService {
 
-  private readonly CACHE_TTL = 5 * 60 * 60; // 5 mins
-
+  // 5 mins
+  private readonly CACHE_TTL =  300;
+  
   async getAllUsers(): Promise<{ users: IUser[]; total: number }> {
     try {
       const users = await User.find().select(

@@ -75,7 +75,7 @@ export const UseBanUser = () => {
 
 export const UseGetAllOrders = (params?:OrderPrams) => {
   return useQuery({
-    queryKey: ["all-orders"],
+    queryKey: ["all-orders",params],
     queryFn: async () => adminService.getAllOrders(params),
     staleTime: 5 * 60 * 1000,
     retry: 2,

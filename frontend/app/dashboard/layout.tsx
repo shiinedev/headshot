@@ -3,6 +3,7 @@ import UserContextProvider from "@/lib/context/user-context";
 import { getCurrentUser } from "@/lib/utils/auth-server";
 import { redirect } from "next/navigation";
 
+
 const DashboardRootLayout = async ({
   children,
 }: {
@@ -17,7 +18,9 @@ const DashboardRootLayout = async ({
   return (
     <UserContextProvider user={user}>
       <DashboardLayoutComponent >
+    
         {children}
+       
       </DashboardLayoutComponent>
     </UserContextProvider>
   );

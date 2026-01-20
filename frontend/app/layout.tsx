@@ -4,6 +4,7 @@ import "./globals.css";
 import {QueryProvider} from "@/lib/query/";
 import { Toaster } from "sonner";
 import { ThemeProvider } from "@/components/theme-provider";
+import { NuqsAdapter } from 'nuqs/adapters/next/app'
 
 const inter = Inter({subsets:['latin'],variable:'--font-sans'});
 
@@ -41,7 +42,7 @@ export default function RootLayout({
         >
 
         <QueryProvider>
-            {children}
+         <NuqsAdapter>{children}</NuqsAdapter>
             <Toaster  position="top-right" richColors/>
         </QueryProvider>
       </ThemeProvider>

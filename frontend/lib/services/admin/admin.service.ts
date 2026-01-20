@@ -24,7 +24,7 @@ export const adminService = {
 
     // orders
     getAllOrders:async(params?:OrderPrams):Promise<GetAllOrders> =>{
-        return await api.get<GetAllOrders>(`/admin/orders?page=${params?.page || 1}&limit=${params?.limit || 10}&status=${params?.status ||''}`);
+        return await api.get<GetAllOrders>(`/admin/orders?page=${params?.page || 1}&limit=${params?.limit || 10}&status=${params?.status ||''}&platform=${params?.platform ||''}`);
     }
 }
 
