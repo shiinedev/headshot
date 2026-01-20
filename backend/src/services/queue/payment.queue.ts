@@ -6,6 +6,7 @@ import { PaymentStatus } from "@/types/payment-types";
 import { NonRetriableError } from "inngest";
 import { emailService } from "@/services/notifications";
 import { inngestClient } from "@/services/queue";
+import { adminService } from "@/services/admin";
 
 export interface ICreditAdditionData {
   userId: string;
@@ -87,6 +88,8 @@ export const getCreditAddFunction = () => {
         updateOrder.creditsAdded = true;
         updateOrder.status = PaymentStatus.COMPLETED;
         await updateOrder.save();
+
+        await adminService.invalidateCachedOrders();
 
         logger.info("Credits added to user account successfully", {
           userId,

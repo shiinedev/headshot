@@ -12,8 +12,9 @@ import {
 import { AppError, NotFoundError } from "@/utils/errors";
 import { logger } from "@/utils/logger";
 import { stripeService } from "./stripe.service";
-import { triggerCreditAddition } from "../queue";
+import { triggerCreditAddition } from "@/services/queue";
 import { config } from "@/config";
+import { adminService } from "@/services/admin";
 
 export class PaymentService {
   //Todo: create stripe service
@@ -61,7 +62,7 @@ export class PaymentService {
       });
 
       logger.info("Order created successfully", { orderId: order._id });
-
+        await adminService.invalidateCachedOrders();
       return order;
     } catch (error) {
       logger.error("Error creating order", error);

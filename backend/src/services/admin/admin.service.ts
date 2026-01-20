@@ -11,6 +11,7 @@ import { logger } from "@/utils/logger";
 import { paymentService } from "../payment";
 import { PaymentPlatform } from "@/types/payment-types";
 import { all } from "better-all";
+import { cacheService } from "../redis/cache.service";
 
 export interface OrderPrams {
   page?: number;
@@ -20,6 +21,9 @@ export interface OrderPrams {
 }
 
 export class AdminService {
+
+  private readonly CACHE_TTL = 5 * 60 * 60; // 5 mins
+
   async getAllUsers(): Promise<{ users: IUser[]; total: number }> {
     try {
       const users = await User.find().select(
@@ -111,14 +115,44 @@ export class AdminService {
     }
   }
 
-  async getAllOrders(
-    params: OrderPrams,
-  ): Promise<{ orders: IOrder[];
-    pagination:{
-        page: number;
-        limit: number;
-        total:number
-    } }> {
+  getCachedOrderKey(params: OrderPrams): string {
+    const { page = 1, limit = 10, status, platform } = params;
+    const keys = ["orders:admin"];
+
+    if (status) {
+      keys.push(`status:${status}`);
+    }
+    if (platform) {
+      keys.push(`platform:${platform}`);
+    }
+ 
+    keys.push(`page:${page}`);
+
+    keys.push(`limit:${limit}`);
+
+    return  keys.join(":");
+    
+  }
+
+
+  async invalidateCachedOrders(): Promise<void> {
+
+    try {
+      await cacheService.deleteByPattern("orders:admin*");
+      logger.info("Invalidated cached orders for admin");
+    } catch (error) {
+      logger.error(`Error invalidating cached orders: ${error}`);
+    }
+  }
+
+  async getAllOrders(params: OrderPrams): Promise<{
+    orders: IOrder[];
+    pagination: {
+      page: number;
+      limit: number;
+      total: number;
+    };
+  }> {
     const { page = 1, limit = 10, status, platform } = params;
     try {
       const query: any = {};
@@ -128,6 +162,21 @@ export class AdminService {
       }
       if (platform) {
         query.platform = platform;
+      }
+
+
+      const cachedKey = this.getCachedOrderKey(params);
+      const cachedData = await cacheService.get<{
+        orders: IOrder[];
+        pagination: {
+          page: number;
+          limit: number;
+          total: number;
+        };
+      }>(cachedKey);
+
+      if (cachedData) {
+        return cachedData;
       }
 
       const skip = (page - 1) * limit;
@@ -146,7 +195,14 @@ export class AdminService {
         },
       });
 
-      return { orders, pagination: { page, limit, total } };
+      const result = {
+        orders,
+        pagination: { page, limit, total },
+      }
+
+      await cacheService.set(cachedKey, result, this.CACHE_TTL);
+
+      return result;
     } catch (error) {
       logger.error("Error fetching all orders:", error);
       throw new AppError("Error fetching orders");
@@ -184,6 +240,8 @@ export class AdminService {
       // update user credits
       user.credits += credits;
       await user.save();
+
+      await this.invalidateCachedOrders();
 
       return order;
     } catch (error) {
