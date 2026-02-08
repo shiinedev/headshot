@@ -81,6 +81,8 @@ app.get("/health",apiRateLimitConfig.general, (req, res) => {
     message: "server is running",
     timeStamp: new Date().toISOString(),
     uptime: process.uptime(),
+    version: "1.0.0",
+    env: config.env,
   });
 });
 
