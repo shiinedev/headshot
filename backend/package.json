@@ -5,8 +5,8 @@
   "private": true,
   "scripts": {
     "dev": "bun --watch src/server.ts",
-    "start": "bun run src/server.ts",
-    "typecheck": "tsc --noEmit"
+    "start": "bun run src/server.ts"
+  
   },
   "devDependencies": {
     "@types/bun": "latest",
