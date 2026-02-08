@@ -79,30 +79,32 @@ export const banUser = async (req: Request, res: Response) => {
 };
 
 export const getAllOrders = async (req: Request, res: Response) => {
-
-  const {page=1,limit=10,status,platform}  = req.query as OrderPrams
-
+  const { page = 1, limit = 10, status, platform } = req.query as OrderPrams;
 
   const data = await adminService.getAllOrders({
     page: Number(page),
     limit: Number(limit),
     status,
-    platform
+    platform,
   });
 
   return successResponse(res, "Orders fetched successfully", data);
 };
 
 export const createManualOrder = async (req: Request, res: Response) => {
+  const { userId, packageId, credits, amount } = req.body as {
+    userId: string;
+    packageId: string;
+    amount: number;
+    credits: number;
+  };
 
-  const {userId,packageId,credits,amount} = req.body as{
-    userId:string;
-    packageId:string;
-    amount:number;
-    credits:number;
-  }
-
-  const order = await adminService.createManualOrder(userId,packageId,credits,amount);
+  const order = await adminService.createManualOrder(
+    userId,
+    packageId,
+    credits,
+    amount,
+  );
 
   return createdResponse(res, "Manual order created successfully", order);
 };

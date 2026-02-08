@@ -12,8 +12,6 @@ import { apiRateLimitConfig } from "./middlewares/rateLimit";
 import compression from "compression";
 
 
-
-
 const app = express();
 
 app.use(
