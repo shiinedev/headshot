@@ -9,9 +9,42 @@ import { errorResponse } from "@/utils/response";
 import { paymentController } from "./controller";
 import { inngestRoutes } from "@/router/innges.route";
 import { apiRateLimitConfig } from "./middlewares/rateLimit";
+import compression from "compression";
+
+import {} from "@shared"
 
 
 const app = express();
+
+app.use(
+  helmet({
+contentSecurityPolicy:{
+  directives:{
+    defaultSrc:["'self'"],
+    styleSrc:["'self'", "'unsafe-inline'"],
+    imgSrc:["'self'", "data:"],
+    scriptSrc:["'self'"],
+    // connectSrc:["'self'",
+    //    "https://api.stripe.com",
+    //    "https://replicate.com",
+    //     config.frontend,
+    //   ],
+    frameSrc:["'self'"],
+    fontSrc:["'self'","data:"],
+    objectSrc:["'none'"],
+    upgradeInsecureRequests:[],
+  }
+},
+crossOriginEmbedderPolicy: false,
+crossOriginResourcePolicy: {
+  policy: "cross-origin"
+},
+  })
+);
+
+
+// compression middleware
+app.use(compression());
 
 // cors middleware
 app.use(
@@ -28,14 +61,15 @@ app.use(
   })
 );
 
+
 // stripe middleware
 
 app.post("/api/v1/payment/webhook/stripe", express.raw({ type: "application/json" }),
  paymentController.handleStripeWebhook);
 
 // middlewares
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(helmet());
 app.use(cookieParser());
 
