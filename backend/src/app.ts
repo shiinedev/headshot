@@ -78,11 +78,11 @@ app.use(cookieParser());
 app.get("/health",apiRateLimitConfig.general, (req, res) => {
   res.status(200).json({
     status: "OK",
-    message: "server is running",
+    message: "server is running on healthy mode",
     timeStamp: new Date().toISOString(),
     uptime: process.uptime(),
     version: "1.0.0",
-    env: config.env,
+    env: config.env
   });
 });
 
@@ -94,7 +94,7 @@ app.use((req, res, next) => {
   return errorResponse(res, "Route not found", 404, [
     {
       path: req.originalUrl,
-      message: "route not found",
+      message: "route not found"
     },
   ]);
 });
