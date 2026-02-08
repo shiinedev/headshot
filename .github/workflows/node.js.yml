@@ -49,7 +49,7 @@ jobs:
         run: |
           cd ${{ github.workspace }}/backend
           export PATH="$HOME/.bun/bin:$PATH"
-          tsc --noEmit
+          bun run typecheck
           echo "✅ Build completed successfully!"
       
       # Step 6: Restart the application
