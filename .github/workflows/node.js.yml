@@ -22,7 +22,7 @@ jobs:
       - name: 🔐 Create .env file from GitHub Secrets
         run: |
           cd ${{ github.workspace }}
-          echo "${{ secrets.BACKEND_ENV }}" > .env
+          echo "${{ secrets.BACKEND }}" > .env
           chmod 600 .env
           echo "✅ .env file created successfully"
       
