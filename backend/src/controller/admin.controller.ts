@@ -2,7 +2,7 @@ import { adminService, type OrderPrams } from "@/services";
 import type { PaymentPlatform, PaymentStatus } from "@/types/payment-types";
 import { ValidationErrors } from "@/utils/errors";
 import { logger } from "@/utils/logger";
-import { createdResponse, paginatedResponse, successResponse } from "@/utils/response";
+import { createdResponse, successResponse } from "@/utils/response";
 import type { Request, Response } from "express";
 
 export const getAllUsers = async (req: Request, res: Response) => {
