@@ -1,4 +1,3 @@
-import { version } from "os";
 
 export const config = {
   port: process.env.PORT || 8000,
