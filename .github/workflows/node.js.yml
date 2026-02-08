@@ -56,6 +56,7 @@ jobs:
       - name: 🚀 Restart Application
         run: |
           cd ${{ github.workspace }}/backend
-          pm2 restart backend || pm2 start src/index.ts --name backend
+          pm2 delete backend || true
+          pm2 start src/server.ts --name backend --interpreter bun
           pm2 save
           echo "✅ Backend deployment completed successfully!"
