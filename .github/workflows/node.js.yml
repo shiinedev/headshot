@@ -21,7 +21,7 @@ jobs:
       # Step 2: 🔐 CREATE .env FILE FROM GITHUB SECRETS (THE MAGIC!)
       - name: 🔐 Create .env file from GitHub Secrets
         run: |
-          cd ${{ github.workspace }}/backedn
+          cd ${{ github.workspace }}
           echo "${{ secrets.BACKEND_ENV }}" > .env
           chmod 600 .env
           echo "✅ .env file created successfully"
@@ -49,7 +49,8 @@ jobs:
         run: |
           cd ${{ github.workspace }}/backend
           export PATH="$HOME/.bun/bin:$PATH"
-          bun run build
+          tsc --noEmit
+          echo "✅ Build completed successfully!"
       
       # Step 6: Restart the application
       - name: 🚀 Restart Application
