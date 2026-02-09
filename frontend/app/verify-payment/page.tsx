@@ -1,39 +1,17 @@
-"use client"
-import { Loader2 } from 'lucide-react';
-import { useRouter, useSearchParams } from 'next/navigation'
-import React, { useEffect } from 'react'
 
-const page = () => {
+import { VerifyPayment } from '@/components/verify-payment';
+import { Suspense } from 'react';
 
-    const searchparams = useSearchParams();
-    const session_id = searchparams.get('session_id');
-    const router = useRouter();
+const  page = async({params}:{params:Promise<{session_id:string}>}) => {
 
-    useEffect(() =>{
-
-        if(!session_id){
-            router.push("/dashboard/user/credits")
-        }
-
-        const timer = setTimeout(() =>{
-            router.push("/dashboard/user/credits")
-        },5000);
-
-
-        return () => clearTimeout(timer);
-
-    },[session_id,router])
+    const {session_id} = await params
+  
     
   return (
-   <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center space-y-4">
-        <Loader2 className="mx-auto h-12 w-12 animate-spin text-primary" />
-        <h2 className="text-xl font-semibold">Payment Successful!</h2>
-        <p className="text-sm text-muted-foreground">
-          Processing your credits...
-        </p>
-      </div>
-    </div>
+   
+   <Suspense>
+    <VerifyPayment session_id={session_id } />
+   </Suspense>
   )
 }
 
