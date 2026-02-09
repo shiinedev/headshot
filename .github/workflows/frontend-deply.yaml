@@ -3,6 +3,8 @@ name: Deploy Frontend to VPS
 on:
   push:
     branches: ["main"]
+    paths:
+      - "frontend/**"
 
 jobs:
   build:
@@ -17,43 +19,55 @@ jobs:
       - name: 📥 Checkout code
         uses: actions/checkout@v4
       
-      # Step 2: 🔐 CREATE .env FILE FROM GITHUB SECRETS (THE MAGIC!)
+      # Step 2: 🔐 CREATE .env FILE FROM GITHUB SECRETS
       - name: 🔐 Create .env file from GitHub Secrets
+        working-directory: ./frontend
         run: |
-          cd ${{ github.workspace }}/frontend
           echo "${{ secrets.FRONTEND_ENV }}" > .env
           chmod 600 .env
           echo "✅ .env file created successfully"
       
       # Step 3: Install Bun
-      - name: 🔧 Install Bun
+      - name: 🔧 Setup Bun
         run: |
           export PATH="$HOME/.bun/bin:$PATH"
           if ! command -v bun &> /dev/null; then
             echo "📦 Installing Bun..."
             curl -fsSL https://bun.sh/install | bash
-            export PATH="$HOME/.bun/bin:$PATH"
           fi
           bun --version
       
       # Step 4: Install dependencies
       - name: 📦 Install dependencies with Bun
+        working-directory: ./frontend
         run: |
-          cd ${{ github.workspace }}/frontend
           export PATH="$HOME/.bun/bin:$PATH"
           bun install
       
       # Step 5: Build the project
       - name: 🏗️ Build the project
+        working-directory: ./frontend
         run: |
-          cd ${{ github.workspace }}/frontend
           export PATH="$HOME/.bun/bin:$PATH"
           bun run build
       
-      # Step 6: Restart the application
-      - name: 🚀 Restart Application
+      # Step 6: Verify build output
+      - name: 🔍 Verify .next folder
+        working-directory: ./frontend
         run: |
-          cd ${{ github.workspace }}/frontend
+          if [ -d ".next" ]; then
+            echo "✅ .next folder exists"
+            ls -la .next/
+          else
+            echo "❌ .next folder not found!"
+            exit 1
+          fi
+      
+      # Step 7: Restart the application
+      - name: 🚀 Restart Application
+        working-directory: ./frontend
+        run: |
+          export PATH="$HOME/.bun/bin:$PATH"
           pm2 restart frontend || pm2 start bun --name frontend -- run start
           pm2 save
           echo "✅ Frontend deployment completed successfully!"
