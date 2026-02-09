@@ -11,35 +11,33 @@ import { inngestRoutes } from "@/router/innges.route";
 import { apiRateLimitConfig } from "./middlewares/rateLimit";
 import compression from "compression";
 
-
 const app = express();
 
 app.use(
   helmet({
-contentSecurityPolicy:{
-  directives:{
-    defaultSrc:["'self'"],
-    styleSrc:["'self'", "'unsafe-inline'"],
-    imgSrc:["'self'", "data:"],
-    scriptSrc:["'self'"],
-    // connectSrc:["'self'",
-    //    "https://api.stripe.com",
-    //    "https://replicate.com",
-    //     config.frontend,
-    //   ],
-    frameSrc:["'self'"],
-    fontSrc:["'self'","data:"],
-    objectSrc:["'none'"],
-    upgradeInsecureRequests:[],
-  }
-},
-crossOriginEmbedderPolicy: false,
-crossOriginResourcePolicy: {
-  policy: "cross-origin"
-},
-  })
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        imgSrc: ["'self'", "data:"],
+        scriptSrc: ["'self'"],
+        // connectSrc:["'self'",
+        //    "https://api.stripe.com",
+        //    "https://replicate.com",
+        //     config.frontend,
+        //   ],
+        frameSrc: ["'self'"],
+        fontSrc: ["'self'", "data:"],
+        objectSrc: ["'none'"],
+        upgradeInsecureRequests: [],
+      },
+    },
+    crossOriginEmbedderPolicy: false,
+    crossOriginResourcePolicy: {
+      policy: "cross-origin",
+    },
+  }),
 );
-
 
 // compression middleware
 app.use(compression());
@@ -56,31 +54,33 @@ app.use(
       "cookie",
       "stripe-signature",
     ],
-  })
+  }),
 );
-
 
 // stripe middleware
 
-app.post("/api/v1/payment/webhook/stripe", express.raw({ type: "application/json" }),
- paymentController.handleStripeWebhook);
+app.post(
+  "/api/v1/payment/webhook/stripe",
+  express.raw({ type: "application/json" }),
+  paymentController.handleStripeWebhook,
+);
 
 // middlewares
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use(helmet());
 app.use(cookieParser());
 
 //routes
 
-app.get("/health",apiRateLimitConfig.general, (req, res) => {
+app.get("/health", apiRateLimitConfig.general, (req, res) => {
   res.status(200).json({
     status: "OK",
     message: "server is running on healthy mode",
     timeStamp: new Date().toISOString(),
     uptime: process.uptime(),
     version: "1.0.0",
-    env: config.env
+    env: config.env,
   });
 });
 
@@ -92,14 +92,12 @@ app.use((req, res, next) => {
   return errorResponse(res, "Route not found", 404, [
     {
       path: req.originalUrl,
-      message: "route not found"
+      message: "route not found",
     },
   ]);
 });
 
 // global error handler
-
 app.use(errorMiddleware);
-
 
 export default app;
