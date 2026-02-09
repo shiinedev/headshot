@@ -21,7 +21,7 @@ jobs:
       # Step 2: 🔐 CREATE .env FILE FROM GITHUB SECRETS (THE MAGIC!)
       - name: 🔐 Create .env file from GitHub Secrets
         run: |
-          cd ${{ github.workspace }}
+          cd ${{ github.workspace }}/backend
           echo "${{ secrets.BACKEND }}" > .env
           chmod 600 .env
           echo "✅ .env file created successfully"
