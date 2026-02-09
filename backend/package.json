@@ -5,8 +5,8 @@
   "private": true,
   "scripts": {
     "dev": "bun --watch src/server.ts",
-    "start": "bun run src/server.ts"
-  
+    "start": "bun run src/server.ts",
+    "type-check": "tsc --noEmit"
   },
   "devDependencies": {
     "@types/bun": "latest",
@@ -19,10 +19,11 @@
     "@types/multer": "^2.0.0",
     "@types/nodemailer": "^7.0.4",
     "@types/supertest": "^6.0.3",
-    "supertest": "^7.1.4"
+    "supertest": "^7.1.4",
+    "typescript": "^5.9.3"
   },
   "peerDependencies": {
-    "typescript": "^5"
+    "typescript": "^5.9.3"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.966.0",

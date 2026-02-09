@@ -44,13 +44,13 @@ jobs:
           export PATH="$HOME/.bun/bin:$PATH"
           bun install
       
-      # # Step 5: Build the project
-      # - name: 🏗️ Build the project
-      #   run: |
-      #     cd ${{ github.workspace }}/backend
-      #     export PATH="$HOME/.bun/bin:$PATH"
-      #     bun run typecheck
-      #     echo "✅ Build completed successfully!"
+      # Step 5: Build the project
+      - name: 🏗️ Build the project
+        run: |
+          cd ${{ github.workspace }}/backend
+          export PATH="$HOME/.bun/bin:$PATH"
+          bun run typecheck
+          echo "✅ Build completed successfully!"
       
       # Step 6: Restart the application
       - name: 🚀 Restart Application

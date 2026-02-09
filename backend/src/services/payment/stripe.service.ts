@@ -16,7 +16,7 @@ export class StripeService {
     const secretKey = config.stripe.secretKey;
 
     if (!secretKey) {
-      logger.error("Stripe secret key is not configured");
+      logger.error("Stripe secret key is not configured",secretKey);
       throw new ValidationErrors("Stripe secret key is is required");
     }
 
@@ -119,7 +119,7 @@ export class StripeService {
           event: event.data.object,
           created: event.created,
         });
-        //TODO:update order status, credit user account
+
         await this.handleCheckoutSessionCompleted(
           event.data.object as Stripe.Checkout.Session
         )

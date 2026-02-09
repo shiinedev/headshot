@@ -40,9 +40,10 @@
         "@types/nodemailer": "^7.0.4",
         "@types/supertest": "^6.0.3",
         "supertest": "^7.1.4",
+        "typescript": "^5.9.3",
       },
       "peerDependencies": {
-        "typescript": "^5",
+        "typescript": "^5.9.3",
       },
     },
   },
