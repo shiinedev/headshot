@@ -1,10 +1,10 @@
-name: Deploy Backend to VPS
+name: Deploy Frontend to VPS
 
 on:
   push:
     branches: ["main"]
   paths:
-      - "backend/**"
+      - "frontend/**"
 
 
 jobs:
@@ -23,8 +23,8 @@ jobs:
       # Step 2: 🔐 CREATE .env FILE FROM GITHUB SECRETS (THE MAGIC!)
       - name: 🔐 Create .env file from GitHub Secrets
         run: |
-          cd ${{ github.workspace }}/backend
-          echo "${{ secrets.BACKEND }}" > .env
+          cd ${{ github.workspace }}/frontend
+          echo "${{ secrets.FRONTEND_ENV }}" > .env
           chmod 600 .env
           echo "✅ .env file created successfully"
       
@@ -42,23 +42,21 @@ jobs:
       # Step 4: Install dependencies
       - name: 📦 Install dependencies with Bun
         run: |
-          cd ${{ github.workspace }}/backend
+          cd ${{ github.workspace }}/frontend
           export PATH="$HOME/.bun/bin:$PATH"
           bun install
       
-      # # Step 5: Build the project
-      # - name: 🏗️ Build the project
-      #   run: |
-      #     cd ${{ github.workspace }}/backend
-      #     export PATH="$HOME/.bun/bin:$PATH"
-      #     bun run typecheck
-      #     echo "✅ Build completed successfully!"
+      # Step 5: Build the project
+      - name: 🏗️ Build the project
+        run: |
+          cd ${{ github.workspace }}/frontend
+          export PATH="$HOME/.bun/bin:$PATH"
+          bun run build
       
       # Step 6: Restart the application
       - name: 🚀 Restart Application
         run: |
-          cd ${{ github.workspace }}/backend
-          pm2 delete backend || true
-          pm2 start src/server.ts --name backend --interpreter bun
+          cd ${{ github.workspace }}/frontend
+          pm2 restart frontend || pm2 start bun --name frontend -- run start
           pm2 save
-          echo "✅ Backend deployment completed successfully!"
+          echo "✅ Frontend deployment completed successfully!"
