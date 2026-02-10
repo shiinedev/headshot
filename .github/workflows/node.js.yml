@@ -3,8 +3,7 @@ name: Deploy Backend to VPS
 on:
   push:
     branches: ["main"]
-    paths:
-      - "backend/**"
+
 
 jobs:
   build:

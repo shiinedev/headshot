@@ -19,7 +19,7 @@ export class AuthService {
 
     const { name, email, password } = input;
 
-    console.log("Registering user with email:", input);
+    
 
     //normalize email
     const normalizedEmail = this.normalizeEmail(email);
