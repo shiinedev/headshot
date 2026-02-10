@@ -23,7 +23,7 @@ jobs:
         run: |
           cd ${{ github.workspace }}/backend
           cat << 'EOF' > .env
-          echo "${{ secrets.BACKEND_ENV }}" > .env
+          echo ${{ secrets.BACKEND_ENV }} 
           EOF
 
           cat << 'EOF' >> .env

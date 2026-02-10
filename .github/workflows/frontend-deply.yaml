@@ -38,10 +38,21 @@ jobs:
         run: |
           export PATH="$HOME/.bun/bin:$PATH"
           bun run build
+
       
       - name: 🔍 Verify build
         run: |
-          ls -la .next/ || echo "❌ Build failed"
+          if [ -d ".next" ]; then
+            echo "✅ Build successful!"
+            echo "Contents of .next folder:"
+            ls -lah .next/
+            echo ""
+            echo "Server folder:"
+            ls -lah .next/server/ 2>/dev/null || echo "No server folder"
+          else
+            echo "❌ Build failed - .next folder not found"
+            exit 1
+            fi
       
       - name: 🚀 Restart PM2
         run: |
