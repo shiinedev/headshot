@@ -25,6 +25,19 @@ jobs:
           cat << 'EOF' > .env
           echo "${{ secrets.BACKEND_ENV }}" > .env
           EOF
+
+          cat << 'EOF' >> .env
+          ${{ secrets.BACKEND_EMAIL }}
+          EOF
+
+          cat << 'EOF' >> .env
+          ${{ secrets.BACKEND_STRIPE }}
+          EOF
+
+          cat << 'EOF' >> .env
+          ${{ secrets.BACKEND_AWS }}
+          EOF
+
           chmod 600 .env
           # Verify it's not empty
           if [ ! -s .env ]; then
