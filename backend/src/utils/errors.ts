@@ -91,3 +91,4 @@ export class ExternalServiceError extends AppError {
     Object.setPrototypeOf(this, ExternalServiceError.prototype);
   }
 }
+

@@ -10,7 +10,20 @@ export const errorMiddleware = (
   res: Response,
   next: NextFunction
 ) => {
-  logger.error("Error Middleware:", { err });
+  
+ logger.error("Error Middleware:", {
+    message: err.message,
+    name: err.name,
+    stack: err.stack,
+    ...(err instanceof AppError && {
+      statusCode: err.statusCode,
+      code: err.code,
+      isOperational: err.isOperational
+    }),
+    ...(err instanceof ValidationErrors && {
+      validationErrors: err.errors
+    })
+  });
 
   if (err instanceof AppError) {
     const validationErrors =
