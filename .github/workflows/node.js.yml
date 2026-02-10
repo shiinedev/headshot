@@ -82,6 +82,6 @@ jobs:
         run: |
           cd ${{ github.workspace }}/backend
           pm2 delete backend || true
-          pm2 start src/server.ts --name backend --interpreter bun
+          pm2 start "bun --bun run src/server.ts" --name backend --interpreter bun
           pm2 save
           echo "✅ Backend deployment completed successfully!"
