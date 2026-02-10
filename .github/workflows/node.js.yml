@@ -38,6 +38,11 @@ jobs:
           ${{ secrets.BACKEND_AWS }}
           EOF
 
+          cat << 'EOF' >> .env
+          ${{ secrets.BACKEND_JWT }}
+          EOF
+
+
           chmod 600 .env
           # Verify it's not empty
           if [ ! -s .env ]; then
