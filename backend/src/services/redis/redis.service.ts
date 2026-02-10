@@ -51,7 +51,7 @@ export class RedisService {
       return await this.redisClient!.get(key);
     } catch (error) {
       logger.error("Redis GET error:", error);
-      throw new AppError("Failed to get data from Redis", 500);
+      return null
     }
   }
 
@@ -72,7 +72,7 @@ export class RedisService {
       }
     } catch (error) {
       logger.error("Redis SET error:", error);
-      throw new AppError("Failed to set data in Redis", 500);
+
     }
   }
 
@@ -85,11 +85,10 @@ export class RedisService {
       await this.redisClient!.del(key);
     } catch (error) {
       logger.error("Redis DELETE error:", error);
-      throw new AppError("Failed to delete data from Redis", 500);
     }
   }
 
-  async increment(key: string): Promise<number> {
+  async increment(key: string): Promise<number | null> {
     if (!this.isConnected()) {
       logger.error("Redis client is not connected");
       throw new AppError("Redis client is not connected", 500);
@@ -98,7 +97,7 @@ export class RedisService {
       return await this.redisClient!.incr(key);
     } catch (error) {
       logger.error("Redis INCREMENT error:", error);
-      throw new AppError("Failed to increment data in Redis", 500);
+      return null
     }
   }
 
@@ -111,14 +110,10 @@ export class RedisService {
       await this.redisClient!.expire(key, expirationInSeconds);
     } catch (error) {
       logger.error("Redis EXPIRATION error:", error);
-      throw new AppError(
-        "Failed to set expiration time for data in Redis",
-        500,
-      );
     }
   }
 
-  async getTTL(key: string): Promise<number> {
+  async getTTL(key: string): Promise<number | null> {
     if (!this.isConnected()) {
       logger.error("Redis client is not connected");
       throw new AppError("Redis client is not connected", 500);
@@ -127,7 +122,7 @@ export class RedisService {
       return await this.redisClient!.ttl(key);
     } catch (error) {
       logger.error("Redis GET TTL error:", error);
-      throw new AppError("Failed to get TTL from Redis", 500);
+      return null
     }
   }
 }
