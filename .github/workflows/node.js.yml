@@ -24,7 +24,12 @@ jobs:
           cd ${{ github.workspace }}/backend
           echo "${{ secrets.BACKEND }}" > .env
           chmod 600 .env
-          echo "✅ .env file created successfully"
+          # Verify it's not empty
+          if [ ! -s .env ]; then
+            echo "❌ ERROR: .env file is empty!"
+            exit 1
+          fi
+          echo "✅ .env created with $(wc -l < .env) lines"
       
       # Step 3: Install Bun
       - name: 🔧 Install Bun
