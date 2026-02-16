@@ -91,7 +91,8 @@ const RegisterPage = () => {
  
 
   return (
-     <div className="flex min-h-screen items-center justify-center bg-background px-4">
+     <div className="flex min-h-screen items-center justify-center bg-background p-6">
+       
       <div className="w-full max-w-md space-y-8 rounded-2xl bg-card p-8 shadow-lg border border-border">
         <div className="text-center">
           <h1 className="text-2xl font-semibold text-foreground">
@@ -110,13 +111,13 @@ const RegisterPage = () => {
             className="mt-8 space-y-6"
           >
             {/* form feild */}
-
-            <FormField
+             <div className="grid grid-cols-1 md:grid-cols-2 space-x-4">
+           <FormField
               control={form.control}
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Full Name</FormLabel>
+                  <FormLabel>username</FormLabel>
                   <FormControl>
                     <Input
                       type="text"
@@ -149,6 +150,8 @@ const RegisterPage = () => {
                 </FormItem>
               )}
             />
+             </div>
+           
 
             {/* Password Field */}
             <FormField

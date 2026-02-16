@@ -6,10 +6,37 @@ import { CreditPackage } from '@/models/CreditPackage.model';
 
 
 const packages = [
-  { name: 'Starter', credits: 10, price: 9.99, description: 'Perfect for trying out AI headshots', bonus: 0, popular: false },
-  { name: 'Popular', credits: 25, price: 19.99, description: 'Most popular choice', bonus: 5, popular: true },
-  { name: 'Professional', credits: 50, price: 34.99, description: 'Best value for professionals', bonus: 15, popular: false },
-  { name: 'Business', credits: 100, price: 59.99, description: 'Ideal for teams', bonus: 30, popular: false },
+  { name: 'Starter', credits: 10, price: 9.99, description: 'Perfect for trying out AI headshots',features: [
+        "5 headshots per month",
+        "Basic AI processing",
+        "HD quality downloads",
+        "3 style options",
+        "Email support",
+        "24-hour processing"
+      ], bonus: 0, popular: false },
+  { name: 'Popular', credits: 25, price: 19.99, description: 'Most popular choice',features: [
+        "25 headshots per month",
+        "Advanced AI processing",
+        "4K quality downloads",
+        "10 style options",
+        "Priority email support",
+        "2-hour processing",
+        "Background removal",
+        "Batch processing"
+      ], bonus: 5, popular: true },
+  { name: 'Professional', credits: 50, price: 34.99, description: 'Best value for professionals',features: [
+        "Unlimited headshots",
+        "Premium AI processing",
+        "8K quality downloads",
+        "Unlimited styles",
+        "24/7 phone & email support",
+        "Instant processing",
+        "Advanced editing tools",
+        "Team management",
+        "Custom branding",
+        "API access"
+      ], bonus: 15, popular: false },
+  { name: 'Enterprise', credits: 100, price: 59.99, description: 'Ideal for teams', bonus: 30, popular: false },
 ];
 
 async function seed() {

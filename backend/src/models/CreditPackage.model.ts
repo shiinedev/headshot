@@ -7,8 +7,10 @@ export interface ICreditPackage extends Document {
   description?: string;
   isActive: boolean;
   stripePriceId?: string;
+  features?: string[]; // List of features included in this package
   bonus?: number; // Extra credits for this package
   popular?: boolean; // Mark as popular for UI
+  period?: string; // e.g. "month", "year" for subscription-based packages
   createdAt: Date;
   updatedAt: Date;
 }
@@ -51,6 +53,14 @@ const creditPackageSchema = new Schema<ICreditPackage>({
   popular: { 
     type: Boolean, 
     default: false 
+  },
+  features: { 
+    type: [String], 
+    default: [] 
+  },
+  period: { 
+    type: String,
+    default: "month" 
   }
 }, {
   timestamps: true
