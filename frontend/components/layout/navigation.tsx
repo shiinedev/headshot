@@ -18,6 +18,7 @@ import { useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { useCurrentUser, useLogout } from '@/lib/hooks';
 import { toast } from 'sonner';
+import { ThemeToggle } from '../theme-toggle';
 
 
 
@@ -101,6 +102,8 @@ export function Navigation() {
           {/* Auth Buttons / User Profile - Desktop */}
           <div className="hidden md:flex items-center gap-4">
             {data?.user ? (
+                <>
+                <ThemeToggle />
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="relative h-10 w-10 rounded-full">
@@ -128,18 +131,6 @@ export function Navigation() {
                       <span>Dashboard</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/profile" className="cursor-pointer">
-                      <User className="mr-2 h-4 w-4" />
-                      <span>Profile</span>
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/settings" className="cursor-pointer">
-                      <Settings className="mr-2 h-4 w-4" />
-                      <span>Settings</span>
-                    </Link>
-                  </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-red-600 focus:text-red-600">
                     <LogOut className="mr-2 h-4 w-4" />
@@ -147,8 +138,10 @@ export function Navigation() {
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
+              </>
             ) : (
               <>
+              <ThemeToggle />
                 <Link href="/auth/login">
                   <Button variant="ghost" className="text-foreground">
                     Login
@@ -174,8 +167,8 @@ export function Navigation() {
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div className="md:hidden py-4 border-t border-border">
-            <div className="flex flex-col gap-4">
+          <div className="md:hidden py-2 border-t border-border min-h-screen">
+            <div className="flex flex-col">
               <Link 
                 href="/" 
                 className={`py-2 transition-colors ${
@@ -223,7 +216,7 @@ export function Navigation() {
               
               <div className="pt-4 border-t border-border">
                 {data?.user ? (
-                  <div className="space-y-3">
+                  <div className="space-y-2 ">
                     {/* User Info */}
                     <div className="flex items-center gap-3 px-2 py-3 bg-secondary/50 rounded-lg">
                       <Avatar className="h-10 w-10">
@@ -245,21 +238,9 @@ export function Navigation() {
                         Dashboard
                       </Button>
                     </Link>
-                    <Link href="/profile" onClick={() => setIsMenuOpen(false)}>
-                      <Button variant="outline" className="w-full justify-start">
-                        <User className="mr-2 h-4 w-4" />
-                        Profile
-                      </Button>
-                    </Link>
-                    <Link href="/settings" onClick={() => setIsMenuOpen(false)}>
-                      <Button variant="outline" className="w-full justify-start">
-                        <Settings className="mr-2 h-4 w-4" />
-                        Settings
-                      </Button>
-                    </Link>
                     <Button 
                       variant="outline" 
-                      className="w-full justify-start text-red-600 hover:text-red-600 hover:bg-red-50"
+                      className="w-full justify-start mt-2 text-red-600 hover:text-red-600 hover:bg-red-50"
                       onClick={() => {
                         handleLogout();
                         setIsMenuOpen(false);

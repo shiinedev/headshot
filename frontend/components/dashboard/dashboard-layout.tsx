@@ -61,7 +61,7 @@ const DashboardLayoutComponent = ({ children }: DashboardLayoutProps) => {
             <Button
                 onClick={handleLogout}
               disabled={isLoggingOut}
-              variant="outline"
+              variant="destructive"
               size="sm"
             >
               <LogOut className="h-4 w-4" />

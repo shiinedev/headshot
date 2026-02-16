@@ -74,7 +74,7 @@ const LoginPage = () => {
       <div className="w-full max-w-md space-y-8 rounded-2xl bg-card p-8 shadow-lg border border-border">
         <div className="text-center">
           <h1 className="text-2xl font-semibold text-foreground">
-            Create Account
+            Welcome Back
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">
             Sign in to get started with HeadShot Pro Build
