@@ -1,91 +1,91 @@
-name: Deploy Backend to VPS
+# name: Deploy Backend to VPS
 
-on:
-  push:
-    branches: ["main"]
+# on:
+#   push:
+#     branches: ["main"]
     
 
-jobs:
-  build:
-    runs-on: self-hosted
-    defaults:
-      run:
-        working-directory: backend
+# jobs:
+#   build:
+#     runs-on: self-hosted
+#     defaults:
+#       run:
+#         working-directory: backend
     
-    strategy:
-      matrix:
-        node-version: [22.x]
+#     strategy:
+#       matrix:
+#         node-version: [22.x]
     
-    steps:
-      # Step 1: Check out the repository
-      - name: 📥 Checkout code
-        uses: actions/checkout@v4
+#     steps:
+#       # Step 1: Check out the repository
+#       - name: 📥 Checkout code
+#         uses: actions/checkout@v4
       
-      # Step 2: 🔐 CREATE .env FILE FROM GITHUB SECRETS (THE MAGIC!)
-      - name: 🔐 Create .env file from GitHub Secrets
-        run: |
-          cd ${{ github.workspace }}/backend
-          cat << 'EOF' > .env
-          echo ${{ secrets.BACKEND_ENV }} 
-          EOF
+#       # Step 2: 🔐 CREATE .env FILE FROM GITHUB SECRETS (THE MAGIC!)
+#       - name: 🔐 Create .env file from GitHub Secrets
+#         run: |
+#           cd ${{ github.workspace }}/backend
+#           cat << 'EOF' > .env
+#           echo ${{ secrets.BACKEND_ENV }} 
+#           EOF
 
-          cat << 'EOF' >> .env
-          ${{ secrets.BACKEND_EMAIL }}
-          EOF
+#           cat << 'EOF' >> .env
+#           ${{ secrets.BACKEND_EMAIL }}
+#           EOF
 
-          cat << 'EOF' >> .env
-          ${{ secrets.BACKEND_STRIPE }}
-          EOF
+#           cat << 'EOF' >> .env
+#           ${{ secrets.BACKEND_STRIPE }}
+#           EOF
 
-          cat << 'EOF' >> .env
-          ${{ secrets.BACKEND_AWS }}
-          EOF
+#           cat << 'EOF' >> .env
+#           ${{ secrets.BACKEND_AWS }}
+#           EOF
 
-          cat << 'EOF' >> .env
-          ${{ secrets.BACKEND_JWT }}
-          EOF
+#           cat << 'EOF' >> .env
+#           ${{ secrets.BACKEND_JWT }}
+#           EOF
 
 
-          chmod 600 .env
-          # Verify it's not empty
-          if [ ! -s .env ]; then
-            echo "❌ ERROR: .env file is empty!"
-            exit 1
-          fi
-          echo "✅ .env created with $(wc -l < .env) lines"
+#           chmod 600 .env
+#           # Verify it's not empty
+#           if [ ! -s .env ]; then
+#             echo "❌ ERROR: .env file is empty!"
+#             exit 1
+#           fi
+#           echo "✅ .env created with $(wc -l < .env) lines"
       
-      # Step 3: Install Bun
-      - name: 🔧 Install Bun
-        run: |
-          export PATH="$HOME/.bun/bin:$PATH"
-          if ! command -v bun &> /dev/null; then
-            echo "📦 Installing Bun..."
-            curl -fsSL https://bun.sh/install | bash
-            export PATH="$HOME/.bun/bin:$PATH"
-          fi
-          bun --version
+#       # Step 3: Install Bun
+#       - name: 🔧 Install Bun
+#         run: |
+#           export PATH="$HOME/.bun/bin:$PATH"
+#           if ! command -v bun &> /dev/null; then
+#             echo "📦 Installing Bun..."
+#             curl -fsSL https://bun.sh/install | bash
+#             export PATH="$HOME/.bun/bin:$PATH"
+#           fi
+#           bun --version
       
-      # Step 4: Install dependencies
-      - name: 📦 Install dependencies with Bun
-        run: |
-          # cd ${{ github.workspace }}/backend
-          export PATH="$HOME/.bun/bin:$PATH"
-          bun install 
-          echo "✅ Dependencies installed successfully!"
+#       # Step 4: Install dependencies
+#       - name: 📦 Install dependencies with Bun
+#         run: |
       
-      # # Step 5: Build the project
-      # - name: 🏗️ Build the project
-      #   run: |
-      #     cd ${{ github.workspace }}/backend
-      #     export PATH="$HOME/.bun/bin:$PATH"
-      #     bun run typecheck
-      #     echo "✅ Build completed successfully!"
+#           export PATH="$HOME/.bun/bin:$PATH"
+#           bun install 
+#           echo "✅ Dependencies installed successfully!"
       
-      # Step 6: Restart the application
-      - name: 🚀 Restart Application
-        run: |
-          # cd ${{ github.workspace }}/backend
-          pm2 delete backend || true
-          pm2 start src/server.ts --name backend --interpreter bun
-          pm2 save
-          echo "✅ Backend deployment completed successfully!"
+#       # # Step 5: Build the project
+#       # - name: 🏗️ Build the project
+#       #   run: |
+#       #     cd ${{ github.workspace }}/backend
+#       #     export PATH="$HOME/.bun/bin:$PATH"
+#       #     bun run typecheck
+#       #     echo "✅ Build completed successfully!"
+      
+#       # Step 6: Restart the application
+#       - name: 🚀 Restart Application
+#         run: |
+         
+#           pm2 delete backend || true
+#           pm2 start src/server.ts --name backend --interpreter bun
+#           pm2 save
+#           echo "✅ Backend deployment completed successfully!"
