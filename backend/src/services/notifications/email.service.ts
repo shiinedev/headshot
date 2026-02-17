@@ -27,6 +27,7 @@ export class EmailService {
         },
       });
     } else {
+      logger.info("email credentials are not set. Email service will not work properly.", config.email.user, config.email.password);
       logger.warn(
         "Email credentials are not set. Email service will not work properly.",
         {

@@ -13,6 +13,7 @@ export class StripeService {
   private stripe: Stripe;
 
   constructor() {
+    logger.info("stripe secret key:", config.stripe.secretKey)
     const secretKey = config.stripe.secretKey;
 
     if (!secretKey) {
