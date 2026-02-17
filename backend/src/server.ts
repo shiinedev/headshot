@@ -1,4 +1,4 @@
-import app from "@/app";
+import app from "./app.ts";
 import { config } from "@/config";
 import { connectDB } from "@/db/connection";
 import { logger } from "@/utils/logger";
