@@ -65,7 +65,7 @@ jobs:
       # Step 4: Install dependencies
       - name: 📦 Install dependencies with Bun
         run: |
-          cd ${{ github.workspace }}
+          cd ${{ github.workspace }}/backend
           export PATH="$HOME/.bun/bin:$PATH"
           bun install --frozen-lockfile
           echo "✅ Dependencies installed successfully!"
