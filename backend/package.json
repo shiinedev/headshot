@@ -1,7 +1,7 @@
 {
   "name": "backend",
   "module": "src/server.ts",
-  "type": "module",
+  "type": "commonjs",
   "private": true,
   "scripts": {
     "dev": "bun --watch src/server.ts",
@@ -39,6 +39,7 @@
     "express": "^5.2.1",
     "helmet": "^8.1.0",
     "inngest": "^3.49.0",
+    "jest": "^30.2.0",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.0.2",
     "multer": "^2.0.2",
