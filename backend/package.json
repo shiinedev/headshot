@@ -1,11 +1,12 @@
 {
   "name": "backend",
-  "module": "src/server.ts",
+  "module": "dist/server.js",
   "type": "module",
   "private": true,
   "scripts": {
     "dev": "bun --watch src/server.ts",
-    "start": "bun run src/server.ts",
+    "start": "node dist/server.js",
+    "build":" npm run build",
     "type-check": "tsc --noEmit"
   },
   "devDependencies": {
