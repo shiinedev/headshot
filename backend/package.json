@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "bun --watch src/server.ts",
     "start": "node dist/server.js",
-    "build":" npm run build",
+    "build":"npm install && npm run build",
     "type-check": "tsc --noEmit"
   },
   "devDependencies": {
