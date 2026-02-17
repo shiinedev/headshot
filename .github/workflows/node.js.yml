@@ -68,9 +68,9 @@ jobs:
       # Step 4: Install dependencies
       - name: 📦 Install dependencies with Bun
         run: |
-          cd ${{ github.workspace }}/backend
+          # cd ${{ github.workspace }}/backend
           export PATH="$HOME/.bun/bin:$PATH"
-          bun install --frozen-lockfile
+          bun install 
           echo "✅ Dependencies installed successfully!"
       
       # # Step 5: Build the project
@@ -84,7 +84,7 @@ jobs:
       # Step 6: Restart the application
       - name: 🚀 Restart Application
         run: |
-          cd ${{ github.workspace }}/backend
+          # cd ${{ github.workspace }}/backend
           pm2 delete backend || true
           pm2 start src/server.ts --name backend --interpreter bun
           pm2 save

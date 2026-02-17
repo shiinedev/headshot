@@ -20,8 +20,38 @@ jobs:
       
       - name: 🔐 Create .env file
         run: |
+          cd ${{ github.workspace }}/frontend
           echo "${{ secrets.FRONTEND_ENV }}" > .env
           chmod 600 .env
+          cd ${{ github.workspace }}/backend
+          cat << 'EOF' > .env
+          echo ${{ secrets.BACKEND_ENV }} 
+          EOF
+
+          cat << 'EOF' >> .env
+          ${{ secrets.BACKEND_EMAIL }}
+          EOF
+
+          cat << 'EOF' >> .env
+          ${{ secrets.BACKEND_STRIPE }}
+          EOF
+
+          cat << 'EOF' >> .env
+          ${{ secrets.BACKEND_AWS }}
+          EOF
+
+          cat << 'EOF' >> .env
+          ${{ secrets.BACKEND_JWT }}
+          EOF
+
+
+          chmod 600 .env
+          # Verify it's not empty
+          if [ ! -s .env ]; then
+            echo "❌ ERROR: .env file is empty!"
+            exit 1
+          fi
+          echo "✅ .env created with $(wc -l < .env) lines"
           echo "✅ .env created"
       
       - name: 🔧 Setup Bun
