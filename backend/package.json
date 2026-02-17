@@ -21,7 +21,6 @@
     "@types/nodemailer": "^7.0.4",
     "@types/supertest": "^6.0.3",
     "supertest": "^7.1.4",
-    "tsup": "^8.5.1",
     "typescript": "^5.9.3"
   },
   "peerDependencies": {
@@ -49,8 +48,9 @@
     "replicate": "^1.4.0",
     "stripe": "^20.1.0",
     "tsc": "^2.0.4",
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3",
     "winston": "^3.19.0",
-    "zod": "^4.2.1",
-    "typescript": "^5.9.3"
+    "zod": "^4.2.1"
   }
 }
