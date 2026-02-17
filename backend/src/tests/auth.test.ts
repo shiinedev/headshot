@@ -2,7 +2,7 @@ import request from "supertest";
 import app from "@/app";
 import mongoose from "mongoose";
 import { config } from "@/config";
-import {describe, test, expect, beforeAll, afterAll } from "bun:test"
+import {describe, test, expect, beforeAll, afterAll } from "jest"
 
 describe("Auth Endpoints", () => {
   beforeAll(async () => {

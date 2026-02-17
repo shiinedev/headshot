@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "bun --watch src/server.ts",
     "start": "node dist/server.js",
-    "build": "tsc",
+    "build": "tsup src/server.ts --format cjs --out-dir dist",
     "type-check": "tsc --noEmit"
   },
   "devDependencies": {
@@ -21,6 +21,7 @@
     "@types/nodemailer": "^7.0.4",
     "@types/supertest": "^6.0.3",
     "supertest": "^7.1.4",
+    "tsup": "^8.5.1",
     "typescript": "^5.9.3"
   },
   "peerDependencies": {
@@ -50,6 +51,6 @@
     "tsc": "^2.0.4",
     "winston": "^3.19.0",
     "zod": "^4.2.1",
-     "typescript": "^5.9.3"
+    "typescript": "^5.9.3"
   }
 }
