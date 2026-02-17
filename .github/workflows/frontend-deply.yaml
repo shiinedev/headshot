@@ -79,6 +79,7 @@ jobs:
       
       - name: 🔍 Verify build
         run: |
+          cd ${{ github.workspace }}/frontend
           if [ -d ".next" ]; then
             echo "✅ Build successful!"
             echo "Contents of .next folder:"
