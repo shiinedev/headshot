@@ -19,8 +19,11 @@ jobs:
       - name: 🔐 Create .env file
         run: |
           cd ${{ github.workspace }}/frontend
-          echo "${{ secrets.FRONTEND_ENV }}" > .env
+          cat << 'EOF' > .env
+          echo ${{ secrets.BACKEND_ENV }} 
+          EOF
           chmod 600 .env
+          echo "✅ . frontend env created with $(wc -l < .env) lines"
           cd ${{ github.workspace }}/backend
           cat << 'EOF' > .env
           echo ${{ secrets.BACKEND_ENV }} 
@@ -49,7 +52,7 @@ jobs:
             echo "❌ ERROR: .env file is empty!"
             exit 1
           fi
-          echo "✅ .env created with $(wc -l < .env) lines"
+          echo "✅ .backend env created with $(wc -l < .env) lines"
           echo "✅ .env created"
       
       - name: 🔧 Setup Bun
@@ -59,11 +62,17 @@ jobs:
       
       - name: 📦 Install dependencies
         run: |
+          cd ${{ github.workspace }}/frontend
           export PATH="$HOME/.bun/bin:$PATH"
           bun install
+          cd ${{ github.workspace }}/backend
+          export PATH="$HOME/.bun/bin:$PATH"
+          bun install 
+          echo "✅ Dependencies installed successfully!"
       
       - name: 🏗️ Build project
         run: |
+          cd ${{ github.workspace }}/frontend
           export PATH="$HOME/.bun/bin:$PATH"
           bun run build
 
@@ -84,8 +93,10 @@ jobs:
       
       - name: 🚀 Restart PM2
         run: |
+          cd ${{ github.workspace }}/frontend
           export PATH="$HOME/.bun/bin:$PATH"
           pm2 restart frontend || pm2 start bun --name frontend -- run start
+          cd ${{ github.workspace }}/backend
           pm2 stop backend || true  
           pm2 start src/server.ts --name backend --interpreter bun
           pm2 save
