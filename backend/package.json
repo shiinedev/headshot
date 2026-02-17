@@ -1,7 +1,7 @@
 {
   "name": "backend",
   "module": "src/server.ts",
-  "type": "commonjs",
+  "type": "module",
   "private": true,
   "scripts": {
     "dev": "bun --watch src/server.ts",
