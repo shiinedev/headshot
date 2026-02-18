@@ -6,10 +6,8 @@ import type {
 } from "axios";
 import axios from "axios";
 
-const BASE_API_URL =
-  process.env.NODE_ENV === "production"
-  ? process.env.NEXT_PUBLIC_API_BASE_URL ?? "https://headshot-zx0t.onrender.com/api/v1"
-  : process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000/api/v1"
+const BASE_API_URL = "https://headshot-zx0t.onrender.com/api/v1";
+//  "http://localhost:8000/api/v1"
 
 export interface ApiResponse<T = unknown> {
   success: boolean;
