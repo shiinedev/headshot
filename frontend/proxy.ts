@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const API_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL;
+
+
+const API_URL = process.env.NODE_ENV === "production"
+  ? process.env.NEXT_PUBLIC_API_BASE_URL ?? "https://headshot-zx0t.onrender.com/api/v1"
+  : process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000/api/v1"
+
 
   console.log("API_URL:", API_URL);
 
