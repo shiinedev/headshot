@@ -1,11 +1,11 @@
 {
   "name": "backend",
-  "module": "dist/server.js",
+  "module": "dist/server.cjs",
   "type": "module",
   "private": true,
   "scripts": {
     "dev": "bun --watch src/server.ts",
-    "start": "node dist/server.js",
+    "start": "node dist/server.cjs",
     "build": "tsup src/server.ts --format cjs --out-dir dist  --clean",
     "type-check": "tsc --noEmit"
   },
